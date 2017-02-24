@@ -22,6 +22,13 @@ class Track
     var $identifier;
 
     /**
+     * The Tracks's most frequently used Lyrics, sorted by frequency. 
+     *
+     * @var array
+     */
+    var $frequentLyrics;
+
+    /**
      * The Artist that composed this Track.
      *
      * @var Artist
