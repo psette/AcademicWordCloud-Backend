@@ -1,5 +1,8 @@
 <?php
 
+include_once dirname(__FILE__) . '/../app/Http/Controllers/SearchController.php';
+
+
 /*
 |--------------------------------------------------------------------------
 | Application Routes
@@ -11,14 +14,17 @@
 |
 */
 
-$app->get('foo', function () {
-    return 'Hello World';
-});
+// $app->get('/foo{artists}', function () {
+// $app->put('/foo/{artists}', function () {
+//     return \App\Http\Controllers\SearchController::searchArtists();
+// });
 
-$app->get('/', function () {
-    $response = use_json_value("Kanye      WEst");;
-    return $response;
-});
+$app->get('/search/{artist}', 'SearchController@searchArtists');
 
 
 
+
+
+
+
+?>
