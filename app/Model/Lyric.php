@@ -32,7 +32,7 @@ class Lyric
 /**
  * SplObjectStorage subclass for storing Lyrics. Uniqueness is determined by Lyric's 'stringValue' property.
  */
-class Lyric extends SplObjectStorage 
+class LyricStorage extends SplObjectStorage 
 {
     public function getHash($lyric) 
     {

@@ -1,7 +1,5 @@
 <?php
 
-namespace App;
-
 /**
  * A musical artist.
  */
@@ -39,10 +37,10 @@ class Artist
 /**
  * SplObjectStorage subclass for storing Artists. Uniqueness is determined by Artist's 'identifier' property.
  */
-class ArtistStorage extends SplObjectStorage 
-{
+class ArtistStorage extends SplObjectStorage{
     public function getHash($artist) 
     {
         return $artist->identifier;
     }
 }
+?>
