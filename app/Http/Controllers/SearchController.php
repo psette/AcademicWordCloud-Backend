@@ -6,43 +6,47 @@ use App\User;
 
 class SearchController extends Controller
 {
+    /*
+     * @param: Artist name to search
+     * @return 
+     *
+     */
     function searchArtists($artist = "Kanye") 
     {
 
-    $location = "http://api.musixmatch.com/ws/1.1/artist.search?apikey=3af1548222b3186a1aa15607251d8fea&page_size=5&q_artist=" . urlencode($artist);
-    $file = file_get_contents($location);
-    $json = json_decode($file, true);
-    $artists[] =  new Artist();
-    $parser = new ArtistParser();
+        $location = "http://api.musixmatch.com/ws/1.1/artist.search?apikey=3af1548222b3186a1aa15607251d8fea&page_size=5&q_artist=" . urlencode($artist);
+        $file = file_get_contents($location);
+        $json = json_decode($file, true);
+        $artists[] =  new Artist();
+        $parser = new ArtistParser();
 
-        foreach($json['message']['body']['artist_list'] as $artistInfo) {
-            $artist = $parser->parsedObject($artistInfo['artist']);
-            array_push($artists, $artist);
-            $tracks = fetchTracks($artist);
-        }
-    
-    return;
+            foreach($json['message']['body']['artist_list'] as $artistInfo) {
+                $artist = $parser->parsedObject($artistInfo['artist']);
+                array_push($artists, $artist);
+                $tracks = fetchTracks($artist);
+            }
+        
+        return;
     }
 
 
     function fetchTracks($artist = "Kanye", $callback = 'fetchTracksCallBack') 
     {
+        $location = "http://api.musixmatch.com/ws/1.1/track.search?apikey=3af1548222b3186a1aa15607251d8fea&page_size=100&f_artist_id=" . urlencode($artist->identifier);
+        $file = file_get_contents($location);
+        $json = json_decode($file, true);
+        $tracks[] =  new Track();
+        $parser = new TrackParser();
 
-    $location = "http://api.musixmatch.com/ws/1.1/track.search?apikey=3af1548222b3186a1aa15607251d8fea&page_size=100&f_artist_id=" . urlencode($artist->identifier);
-    $file = file_get_contents($location);
-    $json = json_decode($file, true);
-    $tracks[] =  new Track();
-    $parser = new TrackParser();
+        foreach($json['message']['body']['track_list'] as $trackInfo) {
+            $track = $parser->parsedObject($trackInfo['track']);
+            $track->artist = $artist;
+            array_push($tracks, $track);
+            fetchLyrics($track);
+        }
 
-    foreach($json['message']['body']['track_list'] as $trackInfo) {
-        $track = $parser->parsedObject($trackInfo['track']);
-        $track->artist = $artist;
-        array_push($tracks, $track);
-        fetchLyrics($track);
-    }
-
-    $callback($artist, $tracks);
-    return $tracks;
+        $callback($artist, $tracks);
+        return $tracks;
     }
 
 
@@ -53,7 +57,11 @@ class SearchController extends Controller
         $artist->tracks = $tracks;
 
         foreach($tracks as $track){
-            if($tracks->$lyrics)
+
+            if( !is_null($tracks->$lyrics) ){
+
+            }
+
         }
 
     } 
@@ -68,5 +76,7 @@ class SearchController extends Controller
     {
         $track->lyrics = $lyrics;
     }
-    
+
 }
+
+?>
