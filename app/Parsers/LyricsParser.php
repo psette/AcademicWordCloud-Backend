@@ -27,10 +27,10 @@ class LyricParser implements Parser
     {
         $json = Array();
 
+        // loop through the lyrics and add a look-up table of the word and its frequency
         foreach ($lyrics as $key)
         {
             $lyric = $lyrics[$key];
-
             array_push($json, array(
                 "word" => $lyric->stringValue,
                 "frequency" => $lyric->frequency,

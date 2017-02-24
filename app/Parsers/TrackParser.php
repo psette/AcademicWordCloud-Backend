@@ -31,6 +31,7 @@ class TrackParser implements Parser
     {
         $lyricsParser = new LyricsParser();
 
+        // store name, identifier, and the frequent lyrics
         $json = array(
              "name" => $track->name,
              "identifier" => $track->identifier,
