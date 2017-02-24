@@ -1,6 +1,6 @@
 <?php
 
-include('Parser.php');
+require('Parser.php');
 
 class LyricParser implements Parser
 {

@@ -1,7 +1,7 @@
 <?php
 
-include('Parser.php');
-include('Track.php');
+require('Parser.php');
+require('../Model/Track.php');
 
 class TrackParser implements Parser
 {

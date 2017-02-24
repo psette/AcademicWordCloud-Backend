@@ -1,9 +1,9 @@
 <?php
 
-include('Parser.php');
-include('Artist.php');
+require('Parser.php');
+include_once dirname(__FILE__) . '/../Model/Artist.php';
 
-class ArtistParser implements JSONParser
+class ArtistParser implements Parser
 {
     /**
      * Parses the JSON and returns an Artist.
