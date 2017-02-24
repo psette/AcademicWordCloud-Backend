@@ -14,10 +14,10 @@ include_once dirname(__FILE__) . '/../app/Http/Controllers/SearchController.php'
 |
 */
 
-// $app->get('/foo{artists}', function () {
-// $app->put('/foo/{artists}', function () {
-//     return \App\Http\Controllers\SearchController::searchArtists();
-// });
+/*
+ * Define endpoint for searching based on the artist
+ *
+ */
 
 $app->get('/search/{artist}', 'SearchController@searchArtists');
 

@@ -29,11 +29,12 @@ class ArtistParser implements Parser
      */
     function serializeObject($artist)
     {
+        // declare a TrackParser and LyricsParser for storing information about the artist and lyrics
         $trackParser = new TrackParser();
         $lyricsParser = new LyricsParser();
-
         $tracks = Array();
 
+        // loop through the tracks for the artist and add them to an array
         foreach ($artist->tracks as $key)
         {
             $track = $artist->tracks[$key];
@@ -41,11 +42,12 @@ class ArtistParser implements Parser
             array_push($tracks, $track);
         }
 
+        // define a look-up table of relevant artist info
         $json = array(
              "name" => $artist->name,
              "identifier" => $artist->identifier,
              "tracks" => $tracks,
-             "frequentLyrics" => $lyricsParser.serializeObject($artist->frequentLyrics),
+             "frequentLyrics" => $lyricsParser.serializeObject($artist->frequentLyrics)
         );
         return $json;
     }
