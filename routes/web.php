@@ -11,6 +11,14 @@
 |
 */
 
-$app->get('/', function () use ($app) {
-    return $app->version();
+$app->get('foo', function () {
+    return 'Hello World';
 });
+
+$app->get('/', function () {
+    $response = use_json_value("Kanye      WEst");;
+    return $response;
+});
+
+
+
