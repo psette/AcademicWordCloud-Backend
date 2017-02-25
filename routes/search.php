@@ -1,8 +1,5 @@
 <?php
 
-include_once dirname(__FILE__) . '/../app/Http/Controllers/SearchController.php';
-
-
 /*
 |--------------------------------------------------------------------------
 | Application Routes
@@ -14,17 +11,10 @@ include_once dirname(__FILE__) . '/../app/Http/Controllers/SearchController.php'
 |
 */
 
-/*
- * Define endpoint for searching based on the artist
- *
- */
-
-$app->get('/search/{artist}', 'SearchController@searchArtists');
-
-
-
-
-
+$app->get('foo2', function () {
+    return 'Hello World';
+});
 
 
 ?>
+

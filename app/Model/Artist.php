@@ -27,7 +27,7 @@ class Artist
     var $tracks;
 
     /**
-     * The Artist's most frequently used Lyrics, sorted by frequency. 
+     * The Artist's most frequently used Lyrics, sorted by frequency.
      *
      * @var array
      */
@@ -38,7 +38,7 @@ class Artist
  * SplObjectStorage subclass for storing Artists. Uniqueness is determined by Artist's 'identifier' property.
  */
 class ArtistStorage extends SplObjectStorage{
-    public function getHash($artist) 
+    public function getHash($artist)
     {
         return $artist->identifier;
     }

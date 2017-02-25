@@ -1,7 +1,5 @@
 <?php
 
-namespace App;
-
 /**
  * A musical track composed by an artist.
  */
@@ -17,12 +15,12 @@ class Track
     /**
      * The unique identifier representing the Track.
      *
-     * @var int
+     * @var string
      */
-    var $identifier;
+    var $url;
 
     /**
-     * The Tracks's most frequently used Lyrics, sorted by frequency. 
+     * The Tracks's most frequently used Lyrics, sorted by frequency.
      *
      * @var array
      */
@@ -39,9 +37,9 @@ class Track
 /**
  * SplObjectStorage subclass for storing Tracks. Uniqueness is determined by Track's 'identifier' property.
  */
-class TrackStorage extends SplObjectStorage 
+class TrackStorage extends \SplObjectStorage
 {
-    public function getHash($track) 
+    public function getHash($track)
     {
         return $track->identifier;
     }

@@ -13,7 +13,7 @@ class LyricParser implements Parser
      */
     function parseObject($json)
     {
-        // To be implemented
+        // TODO : implement
     }
 
     /**
