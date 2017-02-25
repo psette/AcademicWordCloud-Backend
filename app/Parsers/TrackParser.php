@@ -1,7 +1,7 @@
 <?php
 
-require('Parser.php');
-require('../Model/Track.php');
+include_once dirname(__FILE__) . '/Parser.php';
+include_once dirname(__FILE__) . '/../Model/Track.php';
 
 class TrackParser implements Parser
 {
@@ -15,8 +15,8 @@ class TrackParser implements Parser
     function parseObject($json)
     {
         $track = new Track();
-        $track->name = $json["track_name"];
-        $track->identifier = $json["track_id"];
+        $track->name = $json["name"];
+        $track->url = $json["url"];
         return $track;
     }
 
@@ -33,7 +33,7 @@ class TrackParser implements Parser
 
         $json = array(
              "name" => $track->name,
-             "identifier" => $track->identifier,
+             "url" => $track->url,
              "frequentLyrics" => $lyricsParser.serializeObject($track->frequentLyrics),
         );
         return $json;

@@ -1,6 +1,5 @@
 <?php
-
-require('Parser.php');
+include_once dirname(__FILE__) . '/Parser.php';
 include_once dirname(__FILE__) . '/../Model/Artist.php';
 
 class ArtistParser implements Parser
@@ -15,8 +14,7 @@ class ArtistParser implements Parser
     function parseObject($json)
     {
         $artist = new Artist();
-        $artist->name = $json["artist_name"];
-        $artist->identifier = $json["artist_id"];
+        $artist->name = $json["name"];
         return $artist;
     }
 
@@ -43,10 +41,10 @@ class ArtistParser implements Parser
 
         $json = array(
              "name" => $artist->name,
-             "identifier" => $artist->identifier,
              "tracks" => $tracks,
              "frequentLyrics" => $lyricsParser.serializeObject($artist->frequentLyrics),
         );
         return $json;
     }
 }
+?>
