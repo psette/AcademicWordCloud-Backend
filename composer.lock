@@ -4,8 +4,53 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "12a316790922c236d458cc5195d10168",
+    "content-hash": "e033abe9dc591bb37a70113f70662409",
     "packages": [
+        {
+            "name": "cijic/phpmorphy",
+            "version": "0.3.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/cijic/phpmorphy.git",
+                "reference": "093da0bcdfe51296fff9df3a62e05313caa049d7"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/cijic/phpmorphy/zipball/093da0bcdfe51296fff9df3a62e05313caa049d7",
+                "reference": "093da0bcdfe51296fff9df3a62e05313caa049d7",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3.0"
+            },
+            "type": "library",
+            "autoload": {
+                "classmap": [
+                    "libs/phpmorphy/src/common.php",
+                    "libs/phpmorphy/src/"
+                ],
+                "psr-4": {
+                    "cijic\\phpMorphy\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Chiril Teterea",
+                    "email": "altcode@ya.ru",
+                    "role": "Developer"
+                }
+            ],
+            "description": "phpMorphy - morphological analyzer library for Russisan, English languages.",
+            "homepage": "https://github.com/cijic/phpmorphy",
+            "keywords": [
+                "phpmorphy"
+            ],
+            "time": "2015-09-19T11:27:14+00:00"
+        },
         {
             "name": "doctrine/inflector",
             "version": "v1.1.0",

@@ -52,13 +52,20 @@ class SearchController extends Controller
 
     //     return;
     // }
+    public function testMorphy(Request $request, $word)
+    {
+         $lyricParser = new \LyricParser();
+         $stemmedWords = $lyricParser->stemWords($word);
+         var_dump($stemmedWords);
+    }
 
     public function searchArtists(Request $request, $artist)
     {
+
         $artists = [];
 
         $location = "http://lyrics.wikia.com/wikia.php?controller=LyricsApi&method=searchArtist&query=" . urlencode($artist);
-        
+
         $file = @file_get_contents(html_entity_decode($location));
         if ($file == FALSE)
         {
@@ -79,7 +86,7 @@ class SearchController extends Controller
 
         $artistCount = 0;
 
-        foreach ($json["result"] as $artistJSON) 
+        foreach ($json["result"] as $artistJSON)
         {
             $artist = $artistParser->parseObject($artistJSON);
 
@@ -94,11 +101,11 @@ class SearchController extends Controller
 
                 $array = $artistJSON["songs"];
 
-                foreach ($artistJSON["songs"] as $trackJSON) 
+                foreach ($artistJSON["songs"] as $trackJSON)
                 {
                     // Parse limited trackJSON to obtain url value.
                     // The full track JSON will be fetched + parsed in fetchTrack() (including lyrics, which aren't present here)
-                    $tempTrack = $trackParser->parseObject($trackJSON);                    
+                    $tempTrack = $trackParser->parseObject($trackJSON);
 
                     if (!is_null($tempTrack))
                     {
@@ -114,7 +121,7 @@ class SearchController extends Controller
                 $artist->frequentLyrics = Track::frequentLyricsFromTracks($artist->tracks);
 
                 array_push($artists, $artist);
-            }            
+            }
         }
 
         $serialized = array_map([$artistParser, "serializeObject"], $artists);
