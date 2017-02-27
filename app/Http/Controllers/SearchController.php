@@ -102,7 +102,7 @@ class SearchController extends Controller
 
                     if (!is_null($tempTrack))
                     {
-                        $track = $this->fetchTrack($tempTrack, $artist);
+                        $track = $this->fetchTrack($tempTrack->url, $artist);
 
                         if (!is_null($track))
                         {
@@ -110,9 +110,11 @@ class SearchController extends Controller
                         }
                     }
                 }
-            }
-            
-            array_push($artists, $artist);
+
+                $artist->frequentLyrics = Track::frequentLyricsFromTracks($artist->tracks);
+
+                array_push($artists, $artist);
+            }            
         }
 
         $serialized = array_map([$artistParser, "serializeObject"], $artists);
@@ -124,9 +126,7 @@ class SearchController extends Controller
 
     private function fetchTrack($url, $artist)
     {
-        $url = "http://lyrics.wikia.com/wikia.php?controller=LyricsApi&method=getSong&artist=Kanye+West&song=Drop+Dead+Gorgeous";
-
-        $file = @file_get_contents(html_entity_decode($url));
+        $file = @file_get_contents($url);
         if ($file == FALSE)
         {
             return null;
