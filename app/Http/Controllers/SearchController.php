@@ -11,10 +11,10 @@ include_once dirname(__FILE__) . '/../../Parsers/LyricParser.php';
 
 include_once dirname(__FILE__) . '/Controller.php';
 
-include_once dirname(__FILE__) . '/../../Jobs/SendLyric.php';
+include_once dirname(__FILE__) . '/../../Jobs/FetchLyrics.php';
 
 
-use App\Jobs\SendLyric;
+use App\Jobs\FetchLyrics;
 use Illuminate\Http\Request;
 
 use \Artist as Artist;
@@ -90,6 +90,16 @@ class SearchController extends Controller
         return $encoded;
     }
 
+    /*
+     * Create a job for fetching lyrics
+     * 
+     */
+    public function fetchLyrics($trackURL, $trackArtist, $callback = 'fetchLyricsCallBack')
+    {
+       $this->dispatch(new FetchLyrics($trackUrl, $trackArtist));
+       return;
+    }
+
 
     private function fetchTrack($url, $artist)
     {
@@ -110,4 +120,5 @@ class SearchController extends Controller
         $track = $trackParser->parseObject($trackJSON);
         return $track;
     }
+}
 ?>

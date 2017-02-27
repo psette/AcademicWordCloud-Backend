@@ -8,7 +8,7 @@ class FetchLyrics extends Job
 
         protected  $track;
     /**
-     * Create a new job instance.
+     * Create a new job instance to fetch lyrics for a specific song by an artist
      *
      * @return void
      */
@@ -30,11 +30,11 @@ class FetchLyrics extends Job
 
         if($file == FALSE )
         {
-            echo " File does not exsist for   \n"  .  $trackURL ;
+            echo " File does not exsist for \n"  .  $trackURL ;
             return;
         }
 
-       $json = json_decode($file, true);
+        $json = json_decode($file, true);
         if (!array_key_exists("result", $json))
         {
             return null;
