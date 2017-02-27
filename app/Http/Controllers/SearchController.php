@@ -110,9 +110,9 @@ class SearchController extends Controller
                         }
                     }
                 }
-            }
-            
-            array_push($artists, $artist);
+
+                array_push($artists, $artist);
+            }            
         }
 
         $serialized = array_map([$artistParser, "serializeObject"], $artists);
