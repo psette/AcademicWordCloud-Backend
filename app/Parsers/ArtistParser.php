@@ -28,36 +28,8 @@ class ArtistParser implements Parser
             $artist->imageURL = $json["small_image"];
         }
 
-        if (!is_null($this->tracks))
-        {
-            $lyrics = [];
-
-            foreach ($this->tracks as $key)
-            {
-                $track = $this->tracks[$key];
-
-                foreach ($track->frequentLyrics as $frequentLyric) 
-                {
-                    $lyric = $lyrics[$frequentLyric->stringValue];
-                    if (is_null($lyric))
-                    {
-                        $lyric = new Lyric();
-                        $lyric->stringValue = $frequentLyric->stringValue;
-                        $lyric->identifier = $frequentLyric->stringValue;
-                    }
-
-                    $lyric->frequency = $lyric->frequency + 1;
-                    $lyric->tracks->attach($track);
-                    
-                    $lyrics[$frequentLyric->stringValue] = $lyric;
-                }
-            }
-
-            usort($lyrics, ["Lyric", "compareByFrequency"]);
-
-            $artist->frequentLyrics = $lyrics;
-        }
-
+        $artist->frequentLyrics = Track::frequentLyricsFromTracks($this->tracks);
+        
         return $artist;
     }
 

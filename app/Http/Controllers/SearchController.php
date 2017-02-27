@@ -111,6 +111,8 @@ class SearchController extends Controller
                     }
                 }
 
+                $artist->frequentLyrics = Track::frequentLyricsFromTracks($artist->tracks);
+
                 array_push($artists, $artist);
             }            
         }
