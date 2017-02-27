@@ -12,9 +12,11 @@ include_once dirname(__FILE__) . '/../../Parsers/LyricParser.php';
 include_once dirname(__FILE__) . '/Controller.php';
 
 include_once dirname(__FILE__) . '/../../Jobs/FetchLyrics.php';
+include_once dirname(__FILE__) . '/../../Jobs/FetchTrack.php';
 
 
 use App\Jobs\FetchLyrics;
+use App\Jobs\FetchTrack;
 use Illuminate\Http\Request;
 
 use \Artist as Artist;
@@ -91,34 +93,12 @@ class SearchController extends Controller
     }
 
     /*
-     * Create a job for fetching lyrics
+     * Create a job for fetchig the tracks
      * 
      */
-    public function fetchLyrics($trackURL, $trackArtist, $callback = 'fetchLyricsCallBack')
+    private function fetchTrack($trackURL, $trackArtist)
     {
-       $this->dispatch(new FetchLyrics($trackUrl, $trackArtist));
-       return;
-    }
-
-
-    private function fetchTrack($url, $artist)
-    {
-        $url = "http://lyrics.wikia.com/wikia.php?controller=LyricsApi&method=getSong&artist=Kanye+West&song=Drop+Dead+Gorgeous";
-        $file = @file_get_contents(html_entity_decode($url));
-        if ($file == FALSE)
-        {
-            return null;
-        }
-        $json = json_decode($file, true);
-        if (!array_key_exists("result", $json))
-        {
-            return null;
-        }
-        $trackJSON = $json["result"];
-        $trackParser = new TrackParser();
-        $trackParser->artist = $artist;
-        $track = $trackParser->parseObject($trackJSON);
-        return $track;
+        $this->dispatch(new FetchTrack($trackURL, $trackArtist));
     }
 }
 ?>
