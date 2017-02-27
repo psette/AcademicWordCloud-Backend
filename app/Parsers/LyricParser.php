@@ -149,10 +149,6 @@ class LyricParser implements Parser
 
         foreach($word as $wordToBeStemmed){
 
-            if(strcasecmp($wordToBeStemmed, "INSTRUMENTAL") || strcasecmp($wordToBeStemmed, "NSTRUMENTAL") ){
-                continue;
-            }
-
             $base_form = $morphy->getBaseForm(strtoupper($wordToBeStemmed));
 
             if($base_form == false ){
