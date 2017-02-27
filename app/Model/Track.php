@@ -17,6 +17,13 @@ class Track
      *
      * @var string
      */
+    var $identifier;
+
+    /**
+     * The metadata URL of the Track.
+     *
+     * @var string
+     */
     var $url;
 
     /**
@@ -32,15 +39,9 @@ class Track
      * @var Artist
      */
     var $artist;
-}
 
-/**
- * SplObjectStorage subclass for storing Tracks. Uniqueness is determined by Track's 'identifier' property.
- */
-class TrackStorage extends \SplObjectStorage
-{
-    public function getHash($track)
+    function __construct() 
     {
-        return $track->identifier;
+        $this->frequentLyrics = [];
     }
 }

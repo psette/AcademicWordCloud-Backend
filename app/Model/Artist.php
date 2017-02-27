@@ -15,14 +15,21 @@ class Artist
     /**
      * The unique identifier representing the Artist.
      *
-     * @var int
+     * @var string
      */
     var $identifier;
 
     /**
+     * A URL pointing to an image representing the Artist.
+     *
+     * @var string
+     */
+    var $imageURL;
+
+    /**
      * The Tracks composed by the Artist.
      *
-     * @var TrackStorage
+     * @var ModelSet
      */
     var $tracks;
 
@@ -32,15 +39,12 @@ class Artist
      * @var array
      */
     var $frequentLyrics;
-}
 
-/**
- * SplObjectStorage subclass for storing Artists. Uniqueness is determined by Artist's 'identifier' property.
- */
-class ArtistStorage extends SplObjectStorage{
-    public function getHash($artist)
+    function __construct() 
     {
-        return $artist->identifier;
+        $this->tracks = new ModelSet();
+        $this->frequentLyrics = [];
     }
 }
+
 ?>

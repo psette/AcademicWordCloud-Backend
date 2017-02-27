@@ -1,9 +1,15 @@
 <?php
 include_once dirname(__FILE__) . '/Parser.php';
+include_once dirname(__FILE__) . '/TrackParser.php';
+include_once dirname(__FILE__) . '/LyricParser.php';
+
 include_once dirname(__FILE__) . '/../Model/Artist.php';
+include_once dirname(__FILE__) . '/../Model/ModelSet.php';
 
 class ArtistParser implements Parser
 {
+    var $tracks;
+
     /**
      * Parses the JSON and returns an Artist.
      *
@@ -15,6 +21,43 @@ class ArtistParser implements Parser
     {
         $artist = new Artist();
         $artist->name = $json["name"];
+        $artist->identifier = $artist->name;
+
+        if (array_key_exists("small_image", $json))
+        {
+            $artist->imageURL = $json["small_image"];
+        }
+
+        if (!is_null($this->tracks))
+        {
+            $lyrics = [];
+
+            foreach ($this->tracks as $key)
+            {
+                $track = $this->tracks[$key];
+
+                foreach ($track->frequentLyrics as $frequentLyric) 
+                {
+                    $lyric = $lyrics[$frequentLyric->stringValue];
+                    if (is_null($lyric))
+                    {
+                        $lyric = new Lyric();
+                        $lyric->stringValue = $frequentLyric->stringValue;
+                        $lyric->identifier = $frequentLyric->stringValue;
+                    }
+
+                    $lyric->frequency = $lyric->frequency + 1;
+                    $lyric->tracks->attach($track);
+                    
+                    $lyrics[$frequentLyric->stringValue] = $lyric;
+                }
+            }
+
+            usort($lyrics, ["Lyric", "compareByFrequency"]);
+
+            $artist->frequentLyrics = $lyrics;
+        }
+
         return $artist;
     }
 
@@ -26,27 +69,37 @@ class ArtistParser implements Parser
      * @return array Returns the JSON representation of the Artist.
      */
     function serializeObject($artist)
-    {
+    {        
         // declare a TrackParser and LyricsParser for storing information about the artist and lyrics
         $trackParser = new TrackParser();
-        $lyricsParser = new LyricsParser();
-        $tracks = Array();
+        $trackParser->artist = $artist;
 
-        // loop through the tracks for the artist and add them to an array
-        foreach ($artist->tracks as $key)
+        $lyricParser = new LyricParser();
+        $lyricParser->tracks = $artist->tracks;
+
+        $tracksArray = [];
+
+        if (!is_null($artist->tracks))
         {
-            $track = $artist->tracks[$key];
-            $json = $trackParser.serializeObject($track);
-            array_push($tracks, $track);
+            // No "map" function for SplObjectStorage, so must map values manually
+            foreach ($artist->tracks as $track)
+            {
+                $json = $trackParser->serializeObject($track);
+                $tracksArray[] = $json;
+            }
         }
 
         // define a look-up table of relevant artist info
-        $json = array(
+        $json = [
              "name" => $artist->name,
-             "tracks" => $tracks,
-             "frequentLyrics" => $lyricsParser.serializeObject($artist->frequentLyrics)
-        );
+             "identifier" => $artist->identifier,
+             "imageURL" => $artist->imageURL,
+             "tracks" => $tracksArray,
+             "frequentLyrics" => array_map([$lyricParser, "serializeObject"], $artist->frequentLyrics ?: []),
+        ];
+
         return $json;
     }
 }
+
 ?>
