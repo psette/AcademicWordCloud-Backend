@@ -1,10 +1,14 @@
 <?php
 
 include_once dirname(__FILE__) . '/Parser.php';
+include_once dirname(__FILE__) . '/LyricParser.php';
+
 include_once dirname(__FILE__) . '/../Model/Track.php';
 
 class TrackParser implements Parser
 {
+    var $artist;
+
     /**
      * Parses the JSON and returns a Track.
      *
@@ -14,9 +18,20 @@ class TrackParser implements Parser
      */
     function parseObject($json)
     {
+        $lyricParser = new LyricParser();
+
         $track = new Track();
         $track->name = $json["name"];
         $track->url = $json["url"];
+        $track->identifier = $track->url;
+        $track->artist = $this->artist;
+
+        $tracks = new ModelSet();
+        $tracks->attach($track);
+        $lyricParser->tracks = $tracks;
+
+        $track->frequentLyrics = $lyricParser->parseObject($json["lyrics"]);
+
         return $track;
     }
 
@@ -29,14 +44,18 @@ class TrackParser implements Parser
      */
     function serializeObject($track)
     {
-        $lyricsParser = new LyricsParser();
+        $lyricParser = new LyricParser();
+
+        $tracks = new ModelSet();
+        $tracks->attach($track);
+        $lyricParser->tracks = $tracks;
 
         // store name, identifier, and the frequent lyrics
-        $json = array(
+        $json = [
              "name" => $track->name,
-             "url" => $track->url,
-             "frequentLyrics" => $lyricsParser.serializeObject($track->frequentLyrics),
-        );
+             "identifier" => $track->identifier,
+             "frequentLyrics" => array_map([$lyricParser, "serializeObject"], $track->frequentLyrics),
+        ];
         return $json;
     }
 }
