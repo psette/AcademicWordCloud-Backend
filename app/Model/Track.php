@@ -39,4 +39,9 @@ class Track
      * @var Artist
      */
     var $artist;
+
+    function __construct() 
+    {
+        $this->frequentLyrics = [];
+    }
 }

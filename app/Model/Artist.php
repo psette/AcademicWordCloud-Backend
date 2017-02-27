@@ -39,6 +39,12 @@ class Artist
      * @var array
      */
     var $frequentLyrics;
+
+    function __construct() 
+    {
+        $this->tracks = new ModelSet();
+        $this->frequentLyrics = [];
+    }
 }
 
 ?>

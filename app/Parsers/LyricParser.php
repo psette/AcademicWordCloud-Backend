@@ -20,14 +20,18 @@ class LyricParser implements Parser
         $words = preg_split("/[^a-z\'-]+/", $lyrics, -1, PREG_SPLIT_NO_EMPTY);
 
         // Sanitize words into their root words.
-        $sanitizedWords = array_map("sanitizeWord", $words);
+        $sanitizedWords = array_map([$this, "sanitizeWord"], $words);
 
         $lyrics = [];
 
         foreach ($sanitizedWords as $word) 
         {
-            $lyric = $lyrics[$word];
-            if (is_null($lyric))
+            $lyric = null;
+            if (array_key_exists($word, $lyrics))
+            {
+                $lyric = $lyrics[$word];
+            }
+            else
             {
                 $lyric = new Lyric();
                 $lyric->stringValue = $word;
@@ -45,7 +49,7 @@ class LyricParser implements Parser
         }
 
         usort($lyrics, ["Lyric", "compareByFrequency"]);
-
+        
         return $lyrics;
     }
 

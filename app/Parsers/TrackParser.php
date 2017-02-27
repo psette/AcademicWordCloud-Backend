@@ -20,16 +20,34 @@ class TrackParser implements Parser
     {
         $track = new Track();
         $track->name = $json["name"];
-        $track->url = $json["url"];
-        $track->identifier = $track->url;
+
+        if (array_key_exists("url", $json))
+        {
+            $track->url = $json["url"];
+            $track->identifier = $track->url;
+        }
+        else
+        {
+            $track->url = "";
+            $track->identifier = $track->name;
+        }
+
         $track->artist = $this->artist;
+        
+        if (array_key_exists("lyrics", $json))
+        {
+            $tracks = new ModelSet();
+            $tracks->attach($track);
 
-        $tracks = new ModelSet();
-        $tracks->attach($track);
+            $lyricParser = new LyricParser();
+            $lyricParser->tracks = $tracks;
 
-        $lyricParser = new LyricParser();
-        $lyricParser->tracks = $tracks;
-        $track->frequentLyrics = $lyricParser->parseObject($json["lyrics"]);
+            $track->frequentLyrics = $lyricParser->parseObject($json["lyrics"]);
+        }
+        else
+        {
+            $track->frequentLyrics = [];
+        }
 
         return $track;
     }
