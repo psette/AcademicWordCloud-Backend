@@ -37,7 +37,6 @@ class TrackParser implements Parser
         if (array_key_exists("lyrics", $json))
         {
             $track->fullLyrics = $json["lyrics"];
-            echo "fullL" . $track->fullLyrics;
             $tracks = new ModelSet();
             $tracks->attach($track);
 
