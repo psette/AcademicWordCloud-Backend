@@ -6,6 +6,12 @@
 class Track
 {
     /**
+     * The full Lyrics
+     *
+     * @var string
+     */
+    var $fullLyrics;
+    /**
      * The name of the Track.
      *
      * @var string
@@ -40,13 +46,13 @@ class Track
      */
     var $artist;
 
-    function __construct() 
+    function __construct()
     {
         $this->frequentLyrics = [];
     }
 
     static function frequentLyricsFromTracks($tracks)
-    {   
+    {
         $lyrics = [];
 
         if (is_null($tracks))
@@ -56,7 +62,7 @@ class Track
 
         foreach ($tracks as $track)
         {
-            foreach ($track->frequentLyrics as $frequentLyric) 
+            foreach ($track->frequentLyrics as $frequentLyric)
             {
                 $lyric = null;
 
@@ -73,13 +79,13 @@ class Track
 
                 $lyric->frequency = $lyric->frequency + $frequentLyric->frequency;
                 $lyric->tracks->attach($track);
-                
+
                 $lyrics[$frequentLyric->stringValue] = $lyric;
             }
         }
 
         usort($lyrics, ["Lyric", "compareByFrequency"]);
 
-        return $lyrics;      
+        return $lyrics;
     }
 }
