@@ -48,6 +48,6 @@ class Lyric
             return 0;
         }
 
-        return ($a->frequency < $b->frequency) ? -1 : 1;
+        return ($a->frequency < $b->frequency) ? 1 : -1;
     }
 }

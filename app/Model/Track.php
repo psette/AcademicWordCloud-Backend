@@ -44,4 +44,42 @@ class Track
     {
         $this->frequentLyrics = [];
     }
+
+    static function frequentLyricsFromTracks($tracks)
+    {   
+        $lyrics = [];
+
+        if (is_null($tracks))
+        {
+            return $lyrics;
+        }
+
+        foreach ($tracks as $track)
+        {
+            foreach ($track->frequentLyrics as $frequentLyric) 
+            {
+                $lyric = null;
+
+                if (array_key_exists($frequentLyric->stringValue, $lyrics))
+                {
+                    $lyric = $lyrics[$frequentLyric->stringValue];
+                }
+                else
+                {
+                    $lyric = new Lyric();
+                    $lyric->stringValue = $frequentLyric->stringValue;
+                    $lyric->identifier = $frequentLyric->stringValue;
+                }
+
+                $lyric->frequency = $lyric->frequency + $frequentLyric->frequency;
+                $lyric->tracks->attach($track);
+                
+                $lyrics[$frequentLyric->stringValue] = $lyric;
+            }
+        }
+
+        usort($lyrics, ["Lyric", "compareByFrequency"]);
+
+        return $lyrics;      
+    }
 }
