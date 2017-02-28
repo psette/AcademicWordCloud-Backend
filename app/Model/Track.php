@@ -27,6 +27,13 @@ class Track
     var $url;
 
     /**
+     * The complete lyrics for the track.
+     *
+     * @var string
+     */
+    var $lyrics;
+
+    /**
      * The Tracks's most frequently used Lyrics, sorted by frequency.
      *
      * @var array

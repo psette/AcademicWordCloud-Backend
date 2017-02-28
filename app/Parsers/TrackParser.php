@@ -36,13 +36,15 @@ class TrackParser implements Parser
         
         if (array_key_exists("lyrics", $json))
         {
+            $track->lyrics = $json["lyrics"];
+
             $tracks = new ModelSet();
             $tracks->attach($track);
 
             $lyricParser = new LyricParser();
             $lyricParser->tracks = $tracks;
 
-            $track->frequentLyrics = $lyricParser->parseObject($json["lyrics"]);
+            $track->frequentLyrics = $lyricParser->parseObject($track->lyrics);
         }
         else
         {
@@ -71,6 +73,7 @@ class TrackParser implements Parser
         $json = [
              "name" => $track->name,
              "identifier" => $track->identifier,
+             "lyrics" => $track->lyrics,
              "frequentLyrics" => array_map([$lyricParser, "serializeObject"], $track->frequentLyrics),
         ];
         return $json;
