@@ -40,6 +40,9 @@ class Artist
      */
     var $frequentLyrics;
 
+    /**
+     * The Artist constructor.
+     */
     function __construct() 
     {
         $this->tracks = new ModelSet();

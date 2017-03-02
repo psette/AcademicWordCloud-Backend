@@ -47,11 +47,22 @@ class Track
      */
     var $artist;
 
+    /**
+     * The Track constructor.
+     */
     function __construct() 
     {
         $this->frequentLyrics = [];
     }
 
+    /**
+     * Calculates the most frequent lyrics from a set of Tracks.
+     *
+     * @param ModelSet $tracks
+     *
+     * @return ModelSet.
+     *
+     */
     static function frequentLyricsFromTracks($tracks)
     {   
         $lyrics = [];

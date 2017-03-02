@@ -35,12 +35,24 @@ class Lyric
      */
     var $tracks;
 
+    /**
+     * The Lyric constructor.
+     */
     function __construct() 
     {
         $this->frequency = 0;
         $this->tracks = new ModelSet();
     }
 
+    /**
+     * Comparator function to sort Lyrics by frequency.
+     *
+     * @param Lyric $a
+     * @param Lyric $b
+     *
+     * @return int.
+     *
+     */
     static function compareByFrequency($a, $b)
     {
         if ($a->frequency == $b->frequency) 
