@@ -131,6 +131,12 @@ class LyricParser implements Parser
 
             if($base_form == false ){
                      continue;
+             }
+             $word =  (string)($base_form[0]) ;
+             if (strlen($word) < 4){
+                continue;
+            }  else if (strpos($word, '\'') !== FALSE ){
+                continue;
             }
 
             array_push($stemmedWords, (string)($base_form[0]));
