@@ -5,11 +5,6 @@
  */
 class Track
 {
-    /**
-     * The full Lyrics
-     *
-     * @var string
-     */
     var $fullLyrics;
     /**
      * The name of the Track.
