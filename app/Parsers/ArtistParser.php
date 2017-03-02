@@ -6,8 +6,16 @@ include_once dirname(__FILE__) . '/LyricParser.php';
 include_once dirname(__FILE__) . '/../Model/Artist.php';
 include_once dirname(__FILE__) . '/../Model/ModelSet.php';
 
+/**
+ * Parser to parse Artist objects.
+ */
 class ArtistParser implements Parser
 {
+    /**
+    * Tracks that were composed by the artists to be parsed.
+    *
+    * @var ModelSet
+    */
     var $tracks;
 
     /**

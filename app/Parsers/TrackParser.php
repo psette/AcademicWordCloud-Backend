@@ -5,8 +5,16 @@ include_once dirname(__FILE__) . '/LyricParser.php';
 
 include_once dirname(__FILE__) . '/../Model/Track.php';
 
+/**
+ * Parser to parse Track objects.
+ */
 class TrackParser implements Parser
 {
+    /**
+    * The Artist that composed the Tracks to be parsed.
+    *
+    * @var Artist
+    */
     var $artist;
 
     /**
