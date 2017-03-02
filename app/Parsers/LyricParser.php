@@ -8,6 +8,7 @@ include_once __DIR__  . '/../Model/Lyric.php';
  */
 class LyricParser implements Parser
 {
+
     /**
     * An assortment of common words that should be removed from frequent lyrics.
     *
@@ -32,7 +33,8 @@ class LyricParser implements Parser
     function parseObject($lyrics)
     {
         // Split $lyrics into words separated by non-letters (except ' and -).
-        $words = preg_split("/[^a-z\'-]+/", $lyrics, -1, PREG_SPLIT_NO_EMPTY);
+        $words = preg_replace('/[^a-z0-9]+/i', ' ', $lyrics);
+        $words = explode(" ", $words);
         // Sanitize words into their root words.
         $strippedWords = $this->stripStopWords($words);
         $sanitizedWords = $this->sanitizeWord($strippedWords);
