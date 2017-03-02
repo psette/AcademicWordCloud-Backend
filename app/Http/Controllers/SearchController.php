@@ -128,7 +128,9 @@ class SearchController extends Controller
 
         $encoded = json_encode($serialized);
 
-        return $encoded;
+        return response($encoded, 200)
+                  ->header('Content-Type', 'application/json')
+                  ->header('Access-Control-Allow-Origin', '*');
     }
 
     private function fetchTrack($url, $artist)
