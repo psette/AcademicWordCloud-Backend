@@ -22,46 +22,22 @@ use \ArtistParser as ArtistParser;
 use \TrackParser as TrackParser;
 use \LyricParser as LyricParser;
 
-class SearchController extends Controller
+/**
+ * The class handling the Server logic.
+ */
+class Server extends Controller
 {
     /*
-     *  Search artist
+     * Search for artists matching provided text.
      *
      * @param Request $request
      * @param string $artist
      *
-     * @return Artist
+     * @return JSON-encoded Artists array.
      *
      */
-    // public  function fetchTracks($artist ,$artistsArray, $callback = 'fetchTracksCallBack')
-    // {
-
-    //     $tracks[] =  new \Track();
-    //     $parser = new \TrackParser();
-
-    //     foreach( $artistsArray['songs'] as $trackItem ) {
-    //         if(!array_key_exists("url", $trackItem)){
-    //             echo "URL Does not exsit for " . $trackItem['name'];
-    //             continue;
-    //         }
-    //         $track = $parser->parseObject($trackItem);
-    //         $track->artist = $artist;
-    //         array_push($tracks, $track);
-    //         $this->fetchLyrics($track);
-    //     }
-
-    //     return;
-    // }
-    public function testMorphy(Request $request, $word)
-    {
-         $lyricParser = new \LyricParser();
-         $stemmedWords = $lyricParser->stemWords($word);
-         var_dump($stemmedWords);
-    }
-
     public function searchArtists(Request $request, $artist)
     {
-
         $artists = [];
 
         $location = "http://lyrics.wikia.com/wikia.php?controller=LyricsApi&method=searchArtist&query=" . urlencode($artist);
@@ -78,6 +54,7 @@ class SearchController extends Controller
         $trackParser = new TrackParser();
         $lyricParser = new LyricParser();
 
+        // If results key does not exist, an error occured so return empty array.
         if (!array_key_exists("result", $json))
         {
             $response = json_encode($artists);
@@ -117,20 +94,33 @@ class SearchController extends Controller
                         }
                     }
                 }
-
+                
+                // Determine frequent lyrics for an Artist from the tracks.
                 $artist->frequentLyrics = Track::frequentLyricsFromTracks($artist->tracks);
 
                 array_push($artists, $artist);
             }
         }
 
+        // Encode Artist objects to JSON to send to client.
         $serialized = array_map([$artistParser, "serializeObject"], $artists);
-
         $encoded = json_encode($serialized);
 
-        return $encoded;
+        // Allow cross-origin-requests so javascript can make requests.
+        return response($encoded, 200)
+                  ->header('Content-Type', 'application/json')
+                  ->header('Access-Control-Allow-Origin', '*');
     }
 
+    /*
+     * Fetch track metadata for a given track URL.
+     *
+     * @param string $url
+     * @param Artist $artist
+     *
+     * @return Track.
+     *
+     */
     private function fetchTrack($url, $artist)
     {
         $file = @file_get_contents($url);
@@ -141,6 +131,7 @@ class SearchController extends Controller
 
         $json = json_decode($file, true);
 
+        // If no result key, there was an error so return null.
         if (!array_key_exists("result", $json))
         {
             return null;
@@ -155,48 +146,6 @@ class SearchController extends Controller
 
         return $track;
     }
-
-
-
-    // function fetchTracksCallBack($artist , $tracks)
-    // {
-
-    //     $lyricsDictionary = Array();
-    //     $artist->tracks = $tracks;
-
-    //     foreach($tracks as $track){
-
-    //         if( !is_null($tracks->$lyrics) ){
-
-    //         }
-
-    //     }
-
-    // }
-    //TODO FINISH LYRIC FETCHING
-    // function fetchLyrics($track, $callback = 'fetchLyricsCallBack')
-    // {
-    //     $location = $track->url;
-    //     $file = @file_get_contents(html_entity_decode($location));
-
-    //     if($file == FALSE ){
-    //         echo " File does not exsist for $track->name \n.";
-    //         return;
-    //     }
-
-    //     $json = json_decode($file, true);
-
-
-    //     $raw_lyrics  = $json["result"]["lyrics"];
-    //     //HERE ARE THE LYRICS,
-    //     return $json;
-    // }
-
-    // function fetchLyricsCallBack($track, $lyrics)
-    // {
-    //     $track->lyrics = $lyrics;
-    // }
-
 }
 
 ?>
