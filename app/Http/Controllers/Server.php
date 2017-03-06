@@ -62,9 +62,6 @@ class Server extends Controller
         }
         $json = json_decode($file, true);
 
-
-        var_dump($json);
-
         $artistParser = new ArtistParser();
         $trackParser = new TrackParser();
         $lyricParser = new LyricParser();
