@@ -30,6 +30,19 @@ class Server extends Controller
     /*
      * Search for artists matching provided text.
      *
+     * @param Artist $artist to search for
+     * @return String of lyrics.wikia.com artist page
+     *
+     */
+    public function getArtistPageString($artist)
+    {
+        $location = "http://lyrics.wikia.com/wikia.php?controller=LyricsApi&method=searchArtist&query=" . urlencode($artist);
+        $file = @file_get_contents(html_entity_decode($location));
+        return $file;
+    }
+    /*
+     * Search for artists matching provided text.
+     *
      * @param Request $request
      * @param string $artist
      *
@@ -40,15 +53,17 @@ class Server extends Controller
     {
         $artists = [];
 
-        $location = "http://lyrics.wikia.com/wikia.php?controller=LyricsApi&method=searchArtist&query=" . urlencode($artist);
+        // get the contents of the wikia search
+        $file = $this->getArtistPageString($artist);
 
-        $file = @file_get_contents(html_entity_decode($location));
         if ($file == FALSE)
         {
             return $artists;
         }
-
         $json = json_decode($file, true);
+
+
+        var_dump($json);
 
         $artistParser = new ArtistParser();
         $trackParser = new TrackParser();

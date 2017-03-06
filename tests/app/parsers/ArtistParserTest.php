@@ -22,7 +22,7 @@ class ArtistParserTest extends TestCase
 	     );
 
 	// create an artist object and invoke the function with the given input
-    	$ArtistObject = new ArtistParser();
+    $ArtistObject = new ArtistParser();
 	$resultArtist = $ArtistObject->parseObject($testInput);
 
     // fetch the properties from the artist
