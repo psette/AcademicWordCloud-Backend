@@ -19,7 +19,7 @@ class LyricParser implements Parser
     /**
     * The Tracks the lyrics to be parsed belong to.
     *
-    * @var Artist
+    * @var array of Strings
     */
     var $tracks;
 
@@ -37,9 +37,8 @@ class LyricParser implements Parser
         $words = explode(" ", $words);
         // Sanitize words into their root words.
         $strippedWords = $this->stripStopWords($words);
-        $sanitizedWords = $this->sanitizeWord($strippedWords);
         $lyrics = [];
-        foreach ($sanitizedWords as $word)
+        foreach ($strippedWords as $word)
         {
             $lyric = null;
             if (array_key_exists($word, $lyrics))
@@ -115,36 +114,6 @@ class LyricParser implements Parser
 
         $morphy  = new phpMorphy($dict_bundle, $options);
         return $morphy;
-    }
-
-    /*
-     * @param Array of Words
-     * @return Array of Stemmed word
-     *
-     */
-    public function sanitizeWord($word)
-    {
-        $morphy = new cijic\phpMorphy\Morphy('en');
-        $stemmedWords = [];
-
-        foreach($word as $wordToBeStemmed){
-
-            $base_form = $morphy->getBaseForm(strtoupper($wordToBeStemmed));
-
-            if($base_form == false ){
-                     continue;
-             }
-             $word =  (string)($base_form[0]) ;
-             if (strlen($word) < 4){
-                continue;
-            }  else if (strpos($word, '\'') !== FALSE ){
-                continue;
-            }
-
-            array_push($stemmedWords, (string)($base_form[0]));
-
-        }
-      return $stemmedWords;
     }
 }
 ?>
