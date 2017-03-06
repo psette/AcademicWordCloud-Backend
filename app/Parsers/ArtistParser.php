@@ -21,7 +21,7 @@ class ArtistParser implements Parser
     /**
      * Parses the JSON and returns an Artist.
      *
-     * @param array $json The JSON representation of an Artist.
+     * @param array The key-value store of the representation of an Artist.
      *
      * @return Artist Returns an Artist populated with data from $json.
      */
