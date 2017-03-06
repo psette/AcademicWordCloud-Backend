@@ -12,6 +12,9 @@ include_once dirname(__FILE__) . '/../../Parsers/LyricParser.php';
 
 include_once dirname(__FILE__) . '/Controller.php';
 
+include_once dirname(__FILE__) . '/ServerHelpers.php';
+
+
 use Illuminate\Http\Request;
 
 use \Artist as Artist;
@@ -27,19 +30,12 @@ use \LyricParser as LyricParser;
  */
 class Server extends Controller
 {
-    /*
-     * Search for artists matching provided text.
-     *
-     * @param Artist $artist to search for
-     * @return String of lyrics.wikia.com artist page
-     *
-     */
-    public function getArtistPageString($artist)
-    {
-        $location = "http://lyrics.wikia.com/wikia.php?controller=LyricsApi&method=searchArtist&query=" . urlencode($artist);
-        $file = @file_get_contents(html_entity_decode($location));
-        return $file;
+    var $ServerHelper;
+
+    public function setHelper($ServerHelper){
+        $this->ServerHelper = $ServerHelper;
     }
+
     /*
      * Search for artists matching provided text.
      *
@@ -51,10 +47,14 @@ class Server extends Controller
      */
     public function searchArtists(Request $request, $artist)
     {
+        if(is_null( $this->ServerHelper)){
+            $this->ServerHelper = new ServerHelper();
+        }
         $artists = [];
 
         // get the contents of the wikia search
-        $file = $this->getArtistPageString($artist);
+
+        $file = $this->ServerHelper->getArtistPageString($artist);
 
         if ($file == FALSE)
         {
@@ -106,7 +106,7 @@ class Server extends Controller
                         }
                     }
                 }
-                
+
                 // Determine frequent lyrics for an Artist from the tracks.
                 $artist->frequentLyrics = Track::frequentLyricsFromTracks($artist->tracks);
 
@@ -133,11 +133,13 @@ class Server extends Controller
      * @return Track.
      *
      */
-    private function fetchTrack($url, $artist)
+    public function fetchTrack($url, $artist)
     {
-        $file = @file_get_contents($url);
-        if ($file == FALSE)
-        {
+        if(is_null( $this->ServerHelper)){
+            $this->ServerHelper = new ServerHelper();
+        }
+        $file = $this->ServerHelper->getURLsafe($url);
+        if(is_null($file)){
             return null;
         }
 
@@ -155,7 +157,6 @@ class Server extends Controller
         $trackParser->artist = $artist;
 
         $track = $trackParser->parseObject($trackJSON);
-
         return $track;
     }
 }

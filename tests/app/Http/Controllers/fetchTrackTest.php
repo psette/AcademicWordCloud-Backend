@@ -1,29 +1,7 @@
 <?php
-  private function fetchTrack($url, $artist)
-    {
-        $file = @file_get_contents($url);
-        if ($file == FALSE)
-        {
-            return null;
-        }
+use App\Http\Controllers\Server as Server;
+use App\Http\Controllers\ServerHelper as ServerHelper;
 
-        $json = json_decode($file, true);
-
-        // If no result key, there was an error so return null.
-        if (!array_key_exists("result", $json))
-        {
-            return null;
-        }
-
-        $trackJSON = $json["result"];
-
-        $trackParser = new TrackParser();
-        $trackParser->artist = $artist;
-
-        $track = $trackParser->parseObject($trackJSON);
-
-        return $track;
-    }
 class fetchTrackTest extends TestCase
 {
     /**
@@ -35,9 +13,39 @@ class fetchTrackTest extends TestCase
      */
     public function testFetchTrack()
     {
+        $blankArray = array();
+        $json = json_encode(array(
+            "result" => array(
+                "name" => "foo-name",
+                "url" => "foo-url",
+                "small_image" => "foo-sImage-url",
+                "medium_image" => "foo-mImage-url",
+                "large_image" => "foo-LImage-url",
+                "itunes" => "foo-itunes-url",
+                "albums" => $blankArray,
+                "songs" =>  $blankArray
+              )
+        ));
 
-        $fetchedTrack = fetchedTrack();
+        $track = new Track();
+        $track->name= "foo-song-name";
+        $track->url =  "foo-song-url" ;
+        $stub = $this->createMock(ServerHelper::class);
+        $stub->method('getURLsafe')->willReturn($json);
+
+        $server = new Server();
+        $server->setHelper($stub);
+
+        $fetchedTrack =  $server->fetchTrack("URL" , "ARTIST");
+
+
+        $this->assertEquals($fetchedTrack->name, "foo-name");
+        $this->assertEquals($fetchedTrack->url, "foo-url");
+        $this->assertEquals($fetchedTrack->artist, "ARTIST");
+        $this->assertNull($fetchedTrack->lyrics);
+        $this->assertTrue(is_array($fetchedTrack->frequentLyrics));
+        $this->assertNull($fetchedTrack->fullLyrics);
+
     }
-}
-
+};
 ?>

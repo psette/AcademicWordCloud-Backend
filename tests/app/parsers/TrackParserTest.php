@@ -24,7 +24,7 @@ class TrackParserTest extends TestCase
         $testInput = array(
              "name" => "foo-name",
              "url" => "foo-url",
-                "lyrics" => $lyrics
+            "lyrics" => $lyrics
             );
 
         $TrackObject = new TrackParser();
