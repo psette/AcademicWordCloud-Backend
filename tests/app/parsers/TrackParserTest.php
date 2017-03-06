@@ -42,4 +42,30 @@ class TrackParserTest extends TestCase
         $this->assertTrue(is_array($fetchedFreqTrackLyrics));
     }
 
+    /*
+     * Serializes a track to JSON.
+     *
+     * @param track $track The Artist to be serialized.
+     *
+     * @return array Returns the JSON representation of the track.
+     */
+    function testSerializeObject()
+    {
+        $arr = array();
+        $stub = $this->createMock(LyricParser::class);
+        $stub->method('serializeObject')->willReturn($arr);
+        $track = new Track();
+        $track->name =  "foo-track";
+        $track->identifier = "foo-ID";
+        $track->lyrics= "Foo, foobar, barfoo";
+
+        $TrackObject = new TrackParser();
+        $resultJSON = $TrackObject->serializeObject($track);
+
+        $this->assertEquals("foo-track", $resultJSON["name"]);
+        $this->assertEquals("foo-ID", $resultJSON["identifier"]);
+        $this->assertEquals("Foo, foobar, barfoo", $resultJSON["lyrics"]);
+
+        $this->assertTrue(is_array($resultJSON["frequentLyrics"]));
+    }
 }
