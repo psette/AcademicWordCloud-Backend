@@ -11,26 +11,26 @@ class ArtistParserTest extends TestCase
      */
     public function testParseObject()
     {
- 
-		$testInput = array(
-		     "name" => "foo-name",
-		     "small_image" => "http://small_image.html",
-		     "frequent_lyrics" => array(
-		     	"stringValue" => "Foo",
-		     	"frequency" => 10
-		     	)
-		     );
 
-		// create an artist object and invoke the function with the given input
+            $testInput = array(
+	     "name" => "foo-name",
+	     "small_image" => "http://small_image.html",
+	     "frequent_lyrics" => array(
+	     	"stringValue" => "Foo",
+	     	"frequency" => 10
+	     	)
+	     );
+
+	// create an artist object and invoke the function with the given input
     	$ArtistObject = new ArtistParser();
-		$resultArtist = $ArtistObject->parseObject($testInput);
+	$resultArtist = $ArtistObject->parseObject($testInput);
 
-		// fetch the properties from the artist
-		$fetchedArtistName = $resultArtist->name;
-		$fetchedArtistImage = $resultArtist->imageURL;
-		$fetchedArtistFrequency = $resultArtist->frequentLyrics;
+    // fetch the properties from the artist
+    $fetchedArtistName = $resultArtist->name;
+    $fetchedArtistImage = $resultArtist->imageURL;
+    $fetchedArtistFrequency = $resultArtist->frequentLyrics;
 
-		// test that the artist representation is complete with the parsed data
+// test that the artist representation is complete with the parsed data
         $this->assertEquals($fetchedArtistName, "foo-name");
         $this->assertEquals($fetchedArtistImage, "http://small_image.html");
         $this->assertTrue(is_array($fetchedArtistFrequency));
@@ -49,7 +49,8 @@ class ArtistParserTest extends TestCase
     // 	$testArtistIdentifier = "foo-indentifier";
     // 	$testArtistImageURL = "https://foo.com";
     // 	$testArtistTracks = array("foo-track-1", "foo-track-2", "foo-track-3");
-    // 	$testFrequentLyrics = 
-    //     "frequentLyrics" => array_map([$lyricParser, "serializeObject"], $artist->frequentLyrics ?: []), 
-    // }    
+    // 	$testFrequentLyrics =
+    //     "frequentLyrics" => array_map([$lyricParser, "serializeObject"], $artist->frequentLyrics ?: []),
+    // }
+
 }
