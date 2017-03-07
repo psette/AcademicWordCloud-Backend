@@ -27,19 +27,23 @@ use \LyricParser as LyricParser;
  */
 class Server extends Controller
 {
-    /*
+
+  /*
      * Search for artists matching provided text.
      *
      * @param Artist $artist to search for
      * @return String of lyrics.wikia.com artist page
+     *         Null if page cannot be rendered
      *
      */
     public function getArtistPageString($artist)
     {
+        // get the contents of the wikia search
         $location = "http://lyrics.wikia.com/wikia.php?controller=LyricsApi&method=searchArtist&query=" . urlencode($artist);
         $file = @file_get_contents(html_entity_decode($location));
         return $file;
     }
+
     /*
      * Search for artists matching provided text.
      *
@@ -53,13 +57,13 @@ class Server extends Controller
     {
         $artists = [];
 
-        // get the contents of the wikia search
         $file = $this->getArtistPageString($artist);
 
         if ($file == FALSE)
         {
             return $artists;
         }
+
         $json = json_decode($file, true);
 
         $artistParser = new ArtistParser();
@@ -89,7 +93,6 @@ class Server extends Controller
                 }
 
                 $array = $artistJSON["songs"];
-
                 foreach ($artistJSON["songs"] as $trackJSON)
                 {
                     // Parse limited trackJSON to obtain url value.

@@ -1,4 +1,5 @@
 <?php
+/*
   private function fetchTrack($url, $artist)
     {
         $file = @file_get_contents($url);
@@ -24,6 +25,8 @@
 
         return $track;
     }
+    */
+
 class fetchTrackTest extends TestCase
 {
     /**
@@ -33,10 +36,11 @@ class fetchTrackTest extends TestCase
      *
      * @return Artist Returns an Artist populated with data from $json.
      */
+
     public function testFetchTrack()
     {
 
-        $fetchedTrack = fetchedTrack();
+        // $fetchedTrack = fetchedTrack();
     }
 }
 
