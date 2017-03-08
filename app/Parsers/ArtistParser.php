@@ -21,7 +21,7 @@ class ArtistParser implements Parser
     /**
      * Parses the JSON and returns an Artist.
      *
-     * @param array $json The JSON representation of an Artist.
+     * @param array The key-value store of the representation of an Artist.
      *
      * @return Artist Returns an Artist populated with data from $json.
      */
@@ -41,7 +41,6 @@ class ArtistParser implements Parser
         }
 
         $artist->frequentLyrics = Track::frequentLyricsFromTracks($this->tracks);
-        
         return $artist;
     }
 
@@ -53,7 +52,7 @@ class ArtistParser implements Parser
      * @return array Returns the JSON representation of the Artist.
      */
     function serializeObject($artist)
-    {        
+    {
         // declare a TrackParser and LyricsParser for storing information about the artist and lyrics
         $trackParser = new TrackParser();
         $trackParser->artist = $artist;
