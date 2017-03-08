@@ -35,6 +35,10 @@ class ArtistParser implements Parser
         {
             $artist->imageURL = $json["small_image"];
         }
+        else
+        {
+            $artist->imageURL = "https://cdn1.iconfinder.com/data/icons/appicns/513/appicns_iTunes.png";
+        }
 
         $artist->frequentLyrics = Track::frequentLyricsFromTracks($this->tracks);
         
