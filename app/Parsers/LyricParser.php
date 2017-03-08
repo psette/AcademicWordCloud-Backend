@@ -40,6 +40,8 @@ class LyricParser implements Parser
         $lyrics = [];
         foreach ($strippedWords as $word)
         {
+            $word = strtolower($word);
+            
             $lyric = null;
             if (array_key_exists($word, $lyrics))
             {
