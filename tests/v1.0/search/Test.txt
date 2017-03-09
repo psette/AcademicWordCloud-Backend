@@ -1,0 +1,148 @@
+This is the text file that explains all of the functions, their inputs, and outputs as well as a brief description.
+
+Server
+/*
+* Test that Server::SearchArtist retrieves the file contents from the given artist
+* Input: $dummyRequest - Illuminate\Http\Request Object
+*        $testArtist - String of artist name you would like to search
+* Description: This function is testing that the searchArtist() function retrieves the
+* string of the corresponding artist search by invoking he method getArtistPageString()
+* with the arguments of the artist
+*
+*/
+
+/*
+* Test that Server::SearchArtist returns an empty array if no lyrics are found
+* Input: $dummyRequest - Illuminate\Http\Request Object
+*        $testArtist - String of artist name you would like to search
+* Description: This function is testing that the searchArtist() function returns
+*              an empty array, as expected by the client, if there is no array with the
+*              key of "result". This may occur if the api receives a search string that
+*              it does not have any results for
+*
+*
+*/
+
+/*
+ * Test that Server::SearchArtist returns an empty array if no lyrics are found
+ * Input: $dummyRequest - Illuminate\Http\Request Object
+ *        $testArtist - String of artist name you would like to search
+ * Description: This function is testing that the searchArtist() function returns
+ *              an empty array, as expected by the client, if there is no array with the
+ *              key of "songs" within the array of "results. This may occur if the api receives a search string that
+ *              it does not have any lyrics for
+ *
+ *
+ */
+
+/*
+ * Test that Server::SearchArtist returns an empty array if no lyrics are found
+ * Input: $dummyRequest - Illuminate\Http\Request Object
+ *        $testArtist - String of artist name you would like to search
+ * Description: This function is testing that the searchArtist() function returns
+ *              the json response in the format that the client expects to consume it in.
+ *              This includes ensuring that the lyrics are nested properly within the "result"
+ *              array with the corresponding lyrics to songs listed in an array under the key "songs"
+ *              which then contains the corresponding lyrics
+ *              This sample response was created by constructing the response given the barebones JSON structure
+ *              expected, and then populating that array with lyrics that were copy and pasted from an online search.
+ */
+
+
+ In Parser
+/**
+ * Parses the JSON and returns a model object.
+ *
+ * @param string $json The JSON representation of a model object.
+ *
+ * @return object Returns a model object populated with data from $json.
+ */
+
+ /**
+ * Serializes a model object to JSON.
+ *
+ * @param object $object The model object to be serialized.
+ *
+ * @return string Returns the JSON representation of the model object.
+ */
+
+ In ArtistParser
+
+ /**
+ * Parses the JSON and returns an Artist.
+ *
+ * @param array The key-value store of the representation of an Artist.
+ *
+ * @return Artist Returns an Artist populated with data from $json.
+ */
+
+ /**
+ * Parses the JSON and returns an Artist.
+ *
+ * @param array The key-value store of the representation of an Artist.
+ *
+ * @return Artist Returns an Artist populated with data from $json.
+ */
+
+ /**
+ * Serializes a Track to JSON.
+ *
+ * @param Track $track The Track to be serialized.
+ *
+ * @return array Returns the JSON representation of the Track.
+ */
+
+ LyricParser
+/**
+ * Parses the lyrics string and returns Lyrics.
+ *
+ * @param string $lyrics The lyrics for a track.
+ *
+ * @return array Returns an array of Lyrics from $json.
+ */
+
+ /**
+ * Serializes a Lyric to JSON.
+ *
+ * @param Lyric $lyric Lyric to be serialized.
+ *
+ * @return array Returns the JSON representation of the Lyric.
+ */
+
+ /**
+ * Strips stop words from $input.
+ *
+ * @param array Array of words.
+ *
+ * @return array $input words with the stop words removed
+ *
+ */
+
+/*
+ * Helper function to instantiate the phpMorphy stemmer object
+ *
+ * @param none
+ * @return phpMorphy object
+ *
+ */
+
+ In ArtistParser
+/**
+ * Parses the JSON and returns an Artist.
+ *
+ * @param array The key-value store of the representation of an Artist.
+ *
+ * @return Artist Returns an Artist populated with data from $json.
+ */
+
+/**
+ * Serializes an Artist to JSON.
+ *
+ * @param artist $artist The Artist to be serialized.
+ *
+ * @return array Returns the JSON representation of the Artist.
+ */
+
+
+
+

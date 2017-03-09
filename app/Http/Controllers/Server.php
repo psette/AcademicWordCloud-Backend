@@ -28,7 +28,7 @@ use \LyricParser as LyricParser;
 class Server extends Controller
 {
 
-  /*
+    /*
      * Search for artists matching provided text.
      *
      * @param Artist $artist to search for
