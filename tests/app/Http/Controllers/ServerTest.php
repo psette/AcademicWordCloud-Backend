@@ -1,21 +1,24 @@
 <?php
+/*
+@covers \App\Http\Controllers\Server
 
+*/
 class ServerTest extends TestCase
 {
 	/*
      * Test that Server::SearchArtist retrieves the file contents from the given artist
      * Input: $dummyRequest - Illuminate\Http\Request Object
      *        $testArtist - String of artist name you would like to search
-     * Description: This function is testing that the searchArtist() function retrieves the 
+     * Description: This function is testing that the searchArtist() function retrieves the
      * string of the corresponding artist search by invoking he method getArtistPageString()
      * with the arguments of the artist
-     * 
+     *
      */
 	public function testSearchArtistRetrievesFileContents()
     {
     	$dummyRequest = new Illuminate\Http\Request();
         $testArtist = "the+killers";
-            
+
         // Create a stub for the Server class.
         $serverStub = $this->createMock(App\Http\Controllers\Server::class);
         $serverStub = $this->getMockBuilder(App\Http\Controllers\Server::class)
@@ -35,12 +38,12 @@ class ServerTest extends TestCase
      * Test that Server::SearchArtist returns an empty array if no lyrics are found
      * Input: $dummyRequest - Illuminate\Http\Request Object
      *        $testArtist - String of artist name you would like to search
-     * Description: This function is testing that the searchArtist() function returns 
+     * Description: This function is testing that the searchArtist() function returns
      *              an empty array, as expected by the client, if there is no array with the
      *              key of "result". This may occur if the api receives a search string that
      *              it does not have any results for
-     *              
-     * 
+     *
+     *
      */
     public function testEmptyArrayReturned()
     {
@@ -67,12 +70,12 @@ class ServerTest extends TestCase
      * Test that Server::SearchArtist returns an empty array if no lyrics are found
      * Input: $dummyRequest - Illuminate\Http\Request Object
      *        $testArtist - String of artist name you would like to search
-     * Description: This function is testing that the searchArtist() function returns 
+     * Description: This function is testing that the searchArtist() function returns
      *              an empty array, as expected by the client, if there is no array with the
      *              key of "songs" within the array of "results. This may occur if the api receives a search string that
      *              it does not have any lyrics for
-     *              
-     * 
+     *
+     *
      */
     public function testNoSongsFound()
     {
@@ -106,7 +109,7 @@ class ServerTest extends TestCase
      * Test that Server::SearchArtist returns an empty array if no lyrics are found
      * Input: $dummyRequest - Illuminate\Http\Request Object
      *        $testArtist - String of artist name you would like to search
-     * Description: This function is testing that the searchArtist() function returns 
+     * Description: This function is testing that the searchArtist() function returns
      *              the json response in the format that the client expects to consume it in.
      *              This includes ensuring that the lyrics are nested properly within the "result"
      *              array with the corresponding lyrics to songs listed in an array under the key "songs"

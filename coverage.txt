@@ -1,0 +1,26 @@
+
+
+Code Coverage Report:      
+  2017-03-09 05:59:51      
+                           
+ Summary:                  
+  Classes: 33.33% (6/18)   
+  Methods: 40.62% (13/32)  
+  Lines:   80.92% (140/173)
+
+Artist
+  Methods: 100.00% ( 1/ 1)   Lines: 100.00% (  3/  3)
+ArtistParser
+  Methods: 100.00% ( 2/ 2)   Lines: 100.00% ( 23/ 23)
+Lyric
+  Methods: 100.00% ( 2/ 2)   Lines: 100.00% (  6/  6)
+LyricParser
+  Methods:  75.00% ( 3/ 4)   Lines:  78.57% ( 22/ 28)
+ModelSet
+  Methods: 100.00% ( 1/ 1)   Lines: 100.00% (  1/  1)
+Track
+  Methods: 100.00% ( 2/ 2)   Lines: 100.00% ( 18/ 18)
+TrackParser
+  Methods: 100.00% ( 2/ 2)   Lines: 100.00% ( 26/ 26)
+\App\Http\Controllers::Server
+  Methods:   0.00% ( 0/ 3)   Lines:  89.13% ( 41/ 46)
