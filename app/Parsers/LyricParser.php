@@ -32,14 +32,29 @@ class LyricParser implements Parser
      */
     function parseObject($lyrics)
     {
+        $stopWords = array_combine (LyricParser::$commonWords, LyricParser::$commonWords);
+
         // Split $lyrics into words separated by non-letters (except ' and -).
         $words = preg_replace('/[^a-z0-9]+/i', ' ', $lyrics);
         $words = explode(" ", $words);
-        // Sanitize words into their root words.
-        $strippedWords = $this->stripStopWords($words);
+
         $lyrics = [];
-        foreach ($strippedWords as $word)
+
+        foreach ($words as $word)
         {
+            if (strlen($word) < 4)
+            {
+                continue;
+            }
+            else if (strpos($word, '\'') !== FALSE )
+            {
+                continue;
+            }
+            else if (array_key_exists($word, $stopWords))
+            {
+                continue;
+            }
+
             $word = strtolower($word);
             
             $lyric = null;
