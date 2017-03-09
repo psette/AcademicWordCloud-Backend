@@ -66,9 +66,9 @@ class ArtistParserTest extends TestCase
 		$stubbedFrequentlyrics = "frequent-lyrics"; 
 
 		// Create a stub for the SomeClass class.
-		$stub = $this->createMock(trackParser::class);
+		// $stub = $this->createMock(TrackParser::class);
 		// Configure the stub.
-		$stub->method('serializeObject')->willReturn($stubbedFrequentlyrics);
+		// $stub->method('serializeObject')->willReturn($stubbedFrequentlyrics);
 
 		$returnedName = $returnedJson["name"];
 		$returnedIdentifier = $returnedJson["identifier"];
