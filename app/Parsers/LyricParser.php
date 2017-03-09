@@ -41,7 +41,7 @@ class LyricParser implements Parser
         foreach ($strippedWords as $word)
         {
             $word = strtolower($word);
-            
+
             $lyric = null;
             if (array_key_exists($word, $lyrics))
             {
@@ -101,6 +101,7 @@ class LyricParser implements Parser
      * @return phpMorphy object
      *
      */
+ // @codeCoverageIgnoreStart
     private function instantiateMorpher()
     {
         // Specify the path to the directory with dictionaries

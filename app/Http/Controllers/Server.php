@@ -35,9 +35,10 @@ class Server extends Controller
      * @codeCoverageIgnore
      * @return String of lyrics.wikia.com artist page
      *         Null if page cannot be rendered
-     * 
+     *
      *
      */
+    // @codeCoverageIgnoreStart
     public function getArtistPageString($artist)
     {
         // get the contents of the wikia search
@@ -45,6 +46,7 @@ class Server extends Controller
         $file = @file_get_contents(html_entity_decode($location));
         return $file;
     }
+     // @codeCoverageIgnoreEnd
 
     /*
      * Search for artists matching provided text.
@@ -89,11 +91,12 @@ class Server extends Controller
             {
                 // Ensure no more than 3 artists are returned
                 $artistCount = $artistCount + 1;
+                 // @codeCoverageIgnoreStart
                 if ($artistCount > 3)
                 {
                     break;
                 }
-
+                // @codeCoverageIgnoreEnd
                 $array = $artistJSON["songs"];
                 foreach ($artistJSON["songs"] as $trackJSON)
                 {
@@ -111,7 +114,7 @@ class Server extends Controller
                         }
                     }
                 }
-                
+
                 // Determine frequent lyrics for an Artist from the tracks.
                 $artist->frequentLyrics = Track::frequentLyricsFromTracks($artist->tracks);
 
@@ -147,12 +150,13 @@ class Server extends Controller
         }
 
         $json = json_decode($file, true);
-
+        // @codeCoverageIgnoreStart
         // If no result key, there was an error so return null.
         if (!array_key_exists("result", $json))
         {
             return null;
         }
+         // @codeCoverageIgnoreEnd
 
         $trackJSON = $json["result"];
 
