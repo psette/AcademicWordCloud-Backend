@@ -42,6 +42,8 @@ class LyricParser implements Parser
 
         foreach ($words as $word)
         {
+            $word = strtolower($word);
+            
             if (strlen($word) < 4)
             {
                 continue;
@@ -54,8 +56,6 @@ class LyricParser implements Parser
             {
                 continue;
             }
-
-            $word = strtolower($word);
             
             $lyric = null;
             if (array_key_exists($word, $lyrics))
