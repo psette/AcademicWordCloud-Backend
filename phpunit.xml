@@ -16,7 +16,11 @@
     </testsuites>
     <filter>
         <whitelist processUncoveredFilesFromWhitelist="true">
-            <directory suffix=".php">./app</directory>
+            <file>app/Parsers/Parser.php</file>
+            <file>app/Parsers/ArtistParser.php</file>
+            <file>app/Parsers/LyricParser.php</file>
+            <file>app/Parsers/TrackParser.php</file>
+            <file>app/Http/Controllers/Server.php</file>
         </whitelist>
     </filter>
     <php>

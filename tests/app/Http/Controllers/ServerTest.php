@@ -1,8 +1,5 @@
-<?php
-/*
-@covers \App\Http\Controllers\Server
+<?php // @covers \App\Http\Controllers\Server
 
-*/
 class ServerTest extends TestCase
 {
 	/*

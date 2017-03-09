@@ -32,8 +32,10 @@ class Server extends Controller
      * Search for artists matching provided text.
      *
      * @param Artist $artist to search for
+     * @codeCoverageIgnore
      * @return String of lyrics.wikia.com artist page
      *         Null if page cannot be rendered
+     * 
      *
      */
     public function getArtistPageString($artist)
