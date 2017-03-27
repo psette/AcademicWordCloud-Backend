@@ -6,6 +6,7 @@ include_once dirname(__FILE__) . '/../../Model/Track.php';
 include_once dirname(__FILE__) . '/../../Model/Artist.php';
 include_once dirname(__FILE__) . '/../../Model/Lyric.php';
 
+include_once dirname(__FILE__) . '/../../Parsers/XMLPaperParser.php';
 include_once dirname(__FILE__) . '/../../Parsers/TrackParser.php';
 include_once dirname(__FILE__) . '/../../Parsers/ArtistParser.php';
 include_once dirname(__FILE__) . '/../../Parsers/LyricParser.php';
@@ -18,6 +19,7 @@ use \Artist as Artist;
 use \Track as Track;
 use \Lyric as Lyric;
 
+use \XMLPaperParser as XMLPaperParser;
 use \ArtistParser as ArtistParser;
 use \TrackParser as TrackParser;
 use \LyricParser as LyricParser;
@@ -39,7 +41,7 @@ class Server extends Controller
      *
      */
     // @codeCoverageIgnoreStart
-    public function getArtistPageString($artist)
+    public function get_IEEE_file($artist)
     {
         // get the contents of the wikia search
         $location = "https://ieeexplore.ieee.org/gateway/ipsSearch.jsp?au=" . urlencode($artist);
@@ -60,33 +62,13 @@ class Server extends Controller
     public function parseXMLObject($file){
         // get the contents of the wikia search
 
-        //$ScientistXMLParser = new ScientistXMLParser();
-        $trackParser = new TrackParser();
-        $lyricParser = new LyricParser();
+        $XMLPaperParser = new XMLPaperParser();
+        $papers = [ ];
 
         foreach ($file->document as $document) {
-
-           // $scientist = $artistParser->parseObject($artistJSON);
-
-            echo $document->title;
-            echo "<br>";
-
-            echo $document->authors;
-            echo "<br>";
-
-            echo $document->pubtitle;
-            echo "<br>";
-
-            echo $document->abstract;
-            echo "<br>";
-
-            echo $document->mdurl;
-            echo "<br>";
-
-            echo $document->pdf;
-            echo "<br>";
-            echo "<br>";
-
+            $paper = $XMLPaperParser->parseObject($document);
+            array_push($papers, $paper);
+            var_dump($paper);
         }
 
         return $file;
@@ -104,9 +86,12 @@ class Server extends Controller
      */
     public function searchArtists(Request $request, $artist)
     {
+        $IEEE = true;
         $artists = [];
 
-        $file = $this->getArtistPageString($artist);
+        if($IEEE){
+            $file = $this->get_IEEE_file($artist);
+        }
 
         if ($file == FALSE)
         {
