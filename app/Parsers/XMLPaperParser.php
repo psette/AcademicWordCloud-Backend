@@ -4,7 +4,7 @@ include_once dirname(__FILE__) . '/../Model/Paper.php';
 
 
 /**
- * Parser to parse Author objects.
+ * Parser to parse paper objects.
  */
 class XMLPaperParser implements Parser
 {
@@ -16,29 +16,28 @@ class XMLPaperParser implements Parser
     var $paper;
 
     /**
-     * Parses the JSON and returns an Author.
+     * Parses the XML and returns a paper object.
      *
-     * @param array The key-value store of the representation of an Author.
+     * @param XML document of the paper.
      *
-     * @return Author Returns an Author populated with data from $json.
+     * @return paper Returns an Author populated with data from $json.
      */
 
-    function __construct(){
-
-
-    }
 
     function parseObject($XML)
     {
         $paper = new \Paper();
         $paper->authors = explode('; ', $XML->authors);
 
-        $paper->name = $XML->title->__toString();
+        $paper->title = $XML->title->__toString();
         $paper->identifier = $XML->title->__toString();
+        if (is_array($XML->thesaurusterms->term) || is_object($XML->thesaurusterms->term)){
 
-        foreach ($XML->thesaurusterms->term as $term) {
+            foreach ($XML->thesaurusterms->term as $term) {
 
-            array_push($paper->keywords, $term->__toString());
+                array_push($paper->keywords, $term->__toString());
+            }
+
         }
 
         $paper->abstract = $XML->abstract->__toString();
@@ -48,7 +47,7 @@ class XMLPaperParser implements Parser
 
     }
     /**
-     * Serializes an Author to JSON.
+     * Serializes an paper to JSON.
      *
      * @param Author $Author The Author to be serialized.
      *
@@ -81,5 +80,6 @@ class XMLPaperParser implements Parser
     //     ];
     //     return $json;
     // }
+    }
 }
 ?>

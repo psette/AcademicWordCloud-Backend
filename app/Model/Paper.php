@@ -7,11 +7,11 @@ class Paper
 {
     var $fullwords;
     /**
-     * The name of the paper.
+     * The title of the paper.
      *
      * @var string
      */
-    var $name;
+    var $title;
 
     /**
      * The unique identifier representing the paper.
@@ -21,11 +21,32 @@ class Paper
     var $identifier;
 
     /**
-     * The metadata URL of the paper.
+     * The bibtext URL of the paper.
      *
      * @var string
      */
-    var $url;
+    var $bibtext;
+
+    /**
+     * The download URL of the paper.
+     *
+     * @var string
+     */
+    var $download;
+
+    /**
+     * The pdf URL of the paper.
+     *
+     * @var string
+     */
+    var $pdf;
+
+    /**
+     * The digital library URL of the paper.
+     *
+     * @var string
+     */
+    var $digitalLibrary;
 
     /**
      * The complete words for the paper.

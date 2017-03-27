@@ -20,7 +20,7 @@ use \Track as Track;
 use \Lyric as Lyric;
 
 use \XMLPaperParser as XMLPaperParser;
-use \ArtistParser as ArtistParser;
+use \authorParser as ArtistParser;
 use \TrackParser as TrackParser;
 use \LyricParser as LyricParser;
 
@@ -31,20 +31,17 @@ class Server extends Controller
 {
 
     /*
-     * Search for artists matching provided text.
+     * Search for authors matching provided name.
      *
-     * @param Artist $artist to search for
+     * @param author $author to search for
      * @codeCoverageIgnore
-     * @return String of lyrics.wikia.com artist page
-     *         Null if page cannot be rendered
-     *
-     *
+     * @return array of paper objects
      */
     // @codeCoverageIgnoreStart
-    public function get_IEEE_file($artist)
+    public function get_IEEE_file($author)
     {
         // get the contents of the wikia search
-        $location = "https://ieeexplore.ieee.org/gateway/ipsSearch.jsp?au=" . urlencode($artist);
+        $location = "https://ieeexplore.ieee.org/gateway/ipsSearch.jsp?au=" . urlencode($author);
 
         $file = @simplexml_load_file($location);
 
@@ -53,14 +50,19 @@ class Server extends Controller
                 return "FILE IS NOT FOUND";
         }
 
-        $this->parseXMLObject($file);
-        return $file;
+        $papers = $this->parseXMLObject($file);
+        return $papers;
     }
      // @codeCoverageIgnoreEnd
 
 
+       /*
+     *  Parse gieven XMLpaper into paper object array
+     *
+     * @param XML file $file found in search
+     * @return array of paper objects
+     */
     public function parseXMLObject($file){
-        // get the contents of the wikia search
 
         $XMLPaperParser = new XMLPaperParser();
         $papers = [ ];
@@ -71,109 +73,55 @@ class Server extends Controller
             var_dump($paper);
         }
 
-        return $file;
+        return $paper;
 
     }
 
     /*
-     * Search for artists matching provided text.
+     * Search for authors matching provided text.
      *
      * @param Request $request
-     * @param string $artist
+     * @param string $author
      *
-     * @return JSON-encoded Artists array.
+     * @return JSON-encoded authors array.
      *
      */
-    public function searchArtists(Request $request, $artist)
+    public function searchAuthors(Request $request, $author)
     {
+        // For IEEE testing keep true
+
         $IEEE = true;
-        $artists = [];
 
         if($IEEE){
-            $file = $this->get_IEEE_file($artist);
+            $file = $this->get_IEEE_file($author);
         }
 
         if ($file == FALSE)
         {
-            return $artists;
+            return "Error with request " . $author ;
         }
         return $file;
 
-        return $file;
-        $json = json_decode($file, true);
+        // // Encode author objects to JSON to send to client.
+        // $serialized = array_map([$authorParser, "serializeObject"], $authors);
+        // $encoded = json_encode($serialized);
 
-        $artistParser = new ArtistParser();
-        $trackParser = new TrackParser();
-        $lyricParser = new LyricParser();
-
-        // If results key does not exist, an error occured so return empty array.
-        if (!array_key_exists("result", $json))
-        {
-            $response = json_encode($artists);
-            return $response;
-        }
-
-        $artistCount = 0;
-
-        foreach ($json["result"] as $artistJSON)
-        {
-            $artist = $artistParser->parseObject($artistJSON);
-
-            if (array_key_exists("songs", $artistJSON))
-            {
-                // Ensure no more than 3 artists are returned
-                $artistCount = $artistCount + 1;
-                 // @codeCoverageIgnoreStart
-                if ($artistCount > 3)
-                {
-                    break;
-                }
-                // @codeCoverageIgnoreEnd
-                $array = $artistJSON["songs"];
-                foreach ($artistJSON["songs"] as $trackJSON)
-                {
-                    // Parse limited trackJSON to obtain url value.
-                    // The full track JSON will be fetched + parsed in fetchTrack() (including lyrics, which aren't present here)
-                    $tempTrack = $trackParser->parseObject($trackJSON);
-
-                    if (!is_null($tempTrack))
-                    {
-                        $track = $this->fetchTrack($tempTrack->url, $artist);
-
-                        if (!is_null($track))
-                        {
-                            $artist->tracks->attach($track);
-                        }
-                    }
-                }
-
-                // Determine frequent lyrics for an Artist from the tracks.
-                $artist->frequentLyrics = Track::frequentLyricsFromTracks($artist->tracks);
-
-                array_push($artists, $artist);
-            }
-        }
-
-        // Encode Artist objects to JSON to send to client.
-        $serialized = array_map([$artistParser, "serializeObject"], $artists);
-        $encoded = json_encode($serialized);
-
-        // Allow cross-origin-requests so javascript can make requests.
-        return response($encoded, 200)
-                  ->header('Content-Type', 'application/json')
-                  ->header('Access-Control-Allow-Origin', '*');
+        // // Allow cross-origin-requests so javascript can make requests.
+        // return response($encoded, 200)
+        //           ->header('Content-Type', 'application/json')
+        //           ->header('Access-Control-Allow-Origin', '*');
     }
 
     /*
      * Fetch track metadata for a given track URL.
      *
      * @param string $url
-     * @param Artist $artist
+     * @param author $author
      *
      * @return Track.
      *
      */
-    private function fetchTrack($url, $artist)
+    private function fetchTrack($url, $author)
     {
         $file = @file_get_contents($url);
         if ($file == FALSE)
@@ -193,7 +141,7 @@ class Server extends Controller
         $trackJSON = $json["result"];
 
         $trackParser = new TrackParser();
-        $trackParser->artist = $artist;
+        $trackParser->author = $author;
 
         $track = $trackParser->parseObject($trackJSON);
 
