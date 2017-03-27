@@ -56,30 +56,30 @@ class XMLPaperParser implements Parser
      */
     function serializeObject($Author)
     {
-        // declare a TrackParser and LyricsParser for storing information about the Author and words
-        $paperParser = new PaperParser();
-        $paperParser->Author = $Author;
-        $paperParser = new LyricParser();
-        $paperParser->tracks = $Author->tracks;
-        $paperArray = [];
-        if (!is_null($Author->tracks))
-        {
-            // No "map" function for SplObjectStorage, so must map values manually
-            foreach ($Author->papers as $paper)
-            {
-                $json = $paperParser->serializeObject($paper);
-                $paperArray[] = $json;
-            }
-        }
-        // define a look-up table of relevant Author info
-        $json = [
-             "name" => $Author->name,
-             "identifier" => $Author->identifier,
-             "imageURL" => $Author->imageURL,
-             "tracks" => $paperArray,
-             "frequentLyrics" => array_map([$paperParser, "serializeObject"], $Author->frequentWords ?: []),
-        ];
-        return $json;
-    }
+    //     // declare a TrackParser and LyricsParser for storing information about the Author and words
+    //     $paperParser = new PaperParser();
+    //     $paperParser->Author = $Author;
+    //     $paperParser = new LyricParser();
+    //     $paperParser->tracks = $Author->tracks;
+    //     $paperArray = [];
+    //     if (!is_null($Author->tracks))
+    //     {
+    //         // No "map" function for SplObjectStorage, so must map values manually
+    //         foreach ($Author->papers as $paper)
+    //         {
+    //             $json = $paperParser->serializeObject($paper);
+    //             $paperArray[] = $json;
+    //         }
+    //     }
+    //     // define a look-up table of relevant Author info
+    //     $json = [
+    //          "name" => $Author->name,
+    //          "identifier" => $Author->identifier,
+    //          "imageURL" => $Author->imageURL,
+    //          "tracks" => $paperArray,
+    //          "frequentLyrics" => array_map([$paperParser, "serializeObject"], $Author->frequentWords ?: []),
+    //     ];
+    //     return $json;
+    // }
 }
 ?>
