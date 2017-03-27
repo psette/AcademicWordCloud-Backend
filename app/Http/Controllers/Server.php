@@ -9,18 +9,17 @@ include_once dirname(__FILE__) . '/../../Model/Lyric.php';
 include_once dirname(__FILE__) . '/../../Parsers/TrackParser.php';
 include_once dirname(__FILE__) . '/../../Parsers/ArtistParser.php';
 include_once dirname(__FILE__) . '/../../Parsers/LyricParser.php';
+include_once dirname(__FILE__) . '/../../Parsers/PDFParser.php';
 
 include_once dirname(__FILE__) . '/Controller.php';
 
 use Illuminate\Http\Request;
-
 use \Artist as Artist;
-use \Track as Track;
-use \Lyric as Lyric;
-
 use \ArtistParser as ArtistParser;
-use \TrackParser as TrackParser;
 use \LyricParser as LyricParser;
+use \PDFParser as PDFParser;
+use \Track as Track;
+use \TrackParser as TrackParser;
 
 /**
  * The class handling the Server logic.
@@ -46,27 +45,31 @@ class Server extends Controller
 
         $file = @simplexml_load_file($location);
 
-       if ($file == FALSE){
+        if ($file == false) {
 
-                return "FILE IS NOT FOUND";
+            return "FILE IS NOT FOUND";
         }
 
         $this->parseXMLObject($file);
         return $file;
     }
-     // @codeCoverageIgnoreEnd
+    // @codeCoverageIgnoreEnd
 
-
-    public function parseXMLObject($file){
+    public function parseXMLObject($file)
+    {
         // get the contents of the wikia search
 
         //$ScientistXMLParser = new ScientistXMLParser();
         $trackParser = new TrackParser();
         $lyricParser = new LyricParser();
 
+        if ($file == false) {
+            return "doesn't exist";
+
+        }
         foreach ($file->document as $document) {
 
-           // $scientist = $artistParser->parseObject($artistJSON);
+            // $scientist = $artistParser->parseObject($artistJSON);
 
             echo $document->title;
             echo "<br>";
@@ -84,6 +87,14 @@ class Server extends Controller
             echo "<br>";
 
             echo $document->pdf;
+            echo "<br>";
+
+            try {
+                echo "PARSING PDF";
+                PDFParser::getTextFromPDF($document->pdf);
+            } catch (Exception $e) {
+                echo 'Caught exception: ', $e->getMessage(), "\n";
+            }
             echo "<br>";
             echo "<br>";
 
@@ -108,10 +119,6 @@ class Server extends Controller
 
         $file = $this->getArtistPageString($artist);
 
-        if ($file == FALSE)
-        {
-            return $artists;
-        }
         return $file;
 
         return $file;
@@ -122,41 +129,34 @@ class Server extends Controller
         $lyricParser = new LyricParser();
 
         // If results key does not exist, an error occured so return empty array.
-        if (!array_key_exists("result", $json))
-        {
+        if (!array_key_exists("result", $json)) {
             $response = json_encode($artists);
             return $response;
         }
 
         $artistCount = 0;
 
-        foreach ($json["result"] as $artistJSON)
-        {
+        foreach ($json["result"] as $artistJSON) {
             $artist = $artistParser->parseObject($artistJSON);
 
-            if (array_key_exists("songs", $artistJSON))
-            {
+            if (array_key_exists("songs", $artistJSON)) {
                 // Ensure no more than 3 artists are returned
                 $artistCount = $artistCount + 1;
-                 // @codeCoverageIgnoreStart
-                if ($artistCount > 3)
-                {
+                // @codeCoverageIgnoreStart
+                if ($artistCount > 3) {
                     break;
                 }
                 // @codeCoverageIgnoreEnd
                 $array = $artistJSON["songs"];
-                foreach ($artistJSON["songs"] as $trackJSON)
-                {
+                foreach ($artistJSON["songs"] as $trackJSON) {
                     // Parse limited trackJSON to obtain url value.
                     // The full track JSON will be fetched + parsed in fetchTrack() (including lyrics, which aren't present here)
                     $tempTrack = $trackParser->parseObject($trackJSON);
 
-                    if (!is_null($tempTrack))
-                    {
+                    if (!is_null($tempTrack)) {
                         $track = $this->fetchTrack($tempTrack->url, $artist);
 
-                        if (!is_null($track))
-                        {
+                        if (!is_null($track)) {
                             $artist->tracks->attach($track);
                         }
                     }
@@ -175,8 +175,8 @@ class Server extends Controller
 
         // Allow cross-origin-requests so javascript can make requests.
         return response($encoded, 200)
-                  ->header('Content-Type', 'application/json')
-                  ->header('Access-Control-Allow-Origin', '*');
+            ->header('Content-Type', 'application/json')
+            ->header('Access-Control-Allow-Origin', '*');
     }
 
     /*
@@ -191,19 +191,17 @@ class Server extends Controller
     private function fetchTrack($url, $artist)
     {
         $file = @file_get_contents($url);
-        if ($file == FALSE)
-        {
+        if ($file == false) {
             return null;
         }
 
         $json = json_decode($file, true);
         // @codeCoverageIgnoreStart
         // If no result key, there was an error so return null.
-        if (!array_key_exists("result", $json))
-        {
+        if (!array_key_exists("result", $json)) {
             return null;
         }
-         // @codeCoverageIgnoreEnd
+        // @codeCoverageIgnoreEnd
 
         $trackJSON = $json["result"];
 
@@ -215,5 +213,3 @@ class Server extends Controller
         return $track;
     }
 }
-
-?>
