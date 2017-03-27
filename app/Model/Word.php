@@ -3,52 +3,52 @@
 include_once dirname(__FILE__) . '/../Model/ModelSet.php';
 
 /**
- * A lyric from one or more musical tracks.
+ * A word from one or more musical papers.
  */
-class Lyric
+class Word
 {
     /**
-     * The string representation of the Lyric.
+     * The string representation of the word.
      *
      * @var string
      */
     var $stringValue;
 
     /**
-     * The unique identifier representing the Lyric.
+     * The unique identifier representing the word.
      *
      * @var string
      */
     var $identifier;
 
     /**
-     * The frequency of the Lyric.
+     * The frequency of the word.
      *
      * @var int
      */
     var $frequency;
 
     /**
-     * The Tracks that contain the Lyric.
+     * The papers that contain the word.
      *
      * @var ModelSet
      */
-    var $tracks;
+    var $papers;
 
     /**
-     * The Lyric constructor.
+     * The word constructor.
      */
     function __construct() 
     {
         $this->frequency = 0;
-        $this->tracks = new ModelSet();
+        $this->papers = new ModelSet();
     }
 
     /**
-     * Comparator function to sort Lyrics by frequency.
+     * Comparator function to sort words by frequency.
      *
-     * @param Lyric $a
-     * @param Lyric $b
+     * @param word $a
+     * @param word $b
      *
      * @return int.
      *
