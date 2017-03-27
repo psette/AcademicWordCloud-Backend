@@ -63,7 +63,7 @@ class AuthorParserTest extends TestCase
   //   	$AuthorObject = new AuthorParser();
 		// $returnedJson = $AuthorObject->serializeObject($testAuthor);
 
-		// $stubbedFrequentlyrics = "frequent-lyrics"; 
+		// $stubbedFrequentlyrics = "frequent-lyrics";
 
 		// // Create a stub for the SomeClass class.
 		// // $stub = $this->createMock(TrackParser::class);
