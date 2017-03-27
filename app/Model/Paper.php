@@ -5,7 +5,6 @@
  */
 class Paper
 {
-    var $fullwords;
     /**
      * The title of the paper.
      *
@@ -53,7 +52,7 @@ class Paper
      *
      * @var string
      */
-    var $words;
+    var $fullWords;
 
     /**
      * The papers's most frequently used words, sorted by frequency.
