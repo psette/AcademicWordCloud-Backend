@@ -44,9 +44,30 @@ class Server extends Controller
         // get the contents of the wikia search
         $location = "https://ieeexplore.ieee.org/gateway/ipsSearch.jsp?au=" . urlencode($artist);
 
-        $file = simplexml_load_file($location);
+        $file = @simplexml_load_file($location);
+
+       if ($file == FALSE){
+
+                return "FILE IS NOT FOUND";
+        }
+
+        $this->parseXMLObject($file);
+        return $file;
+    }
+     // @codeCoverageIgnoreEnd
+
+
+    public function parseXMLObject($file){
+        // get the contents of the wikia search
+
+        //$ScientistXMLParser = new ScientistXMLParser();
+        $trackParser = new TrackParser();
+        $lyricParser = new LyricParser();
 
         foreach ($file->document as $document) {
+
+           // $scientist = $artistParser->parseObject($artistJSON);
+
             echo $document->title;
             echo "<br>";
 
@@ -65,11 +86,12 @@ class Server extends Controller
             echo $document->pdf;
             echo "<br>";
             echo "<br>";
+
         }
 
         return $file;
+
     }
-     // @codeCoverageIgnoreEnd
 
     /*
      * Search for artists matching provided text.
@@ -92,69 +114,69 @@ class Server extends Controller
         }
         return $file;
 
-        // return $file;
-        // $json = json_decode($file, true);
+        return $file;
+        $json = json_decode($file, true);
 
-        // $artistParser = new ArtistParser();
-        // $trackParser = new TrackParser();
-        // $lyricParser = new LyricParser();
+        $artistParser = new ArtistParser();
+        $trackParser = new TrackParser();
+        $lyricParser = new LyricParser();
 
-        // // If results key does not exist, an error occured so return empty array.
-        // if (!array_key_exists("result", $json))
-        // {
-        //     $response = json_encode($artists);
-        //     return $response;
-        // }
+        // If results key does not exist, an error occured so return empty array.
+        if (!array_key_exists("result", $json))
+        {
+            $response = json_encode($artists);
+            return $response;
+        }
 
-        // $artistCount = 0;
+        $artistCount = 0;
 
-        // foreach ($json["result"] as $artistJSON)
-        // {
-        //     $artist = $artistParser->parseObject($artistJSON);
+        foreach ($json["result"] as $artistJSON)
+        {
+            $artist = $artistParser->parseObject($artistJSON);
 
-        //     if (array_key_exists("songs", $artistJSON))
-        //     {
-        //         // Ensure no more than 3 artists are returned
-        //         $artistCount = $artistCount + 1;
-        //          // @codeCoverageIgnoreStart
-        //         if ($artistCount > 3)
-        //         {
-        //             break;
-        //         }
-        //         // @codeCoverageIgnoreEnd
-        //         $array = $artistJSON["songs"];
-        //         foreach ($artistJSON["songs"] as $trackJSON)
-        //         {
-        //             // Parse limited trackJSON to obtain url value.
-        //             // The full track JSON will be fetched + parsed in fetchTrack() (including lyrics, which aren't present here)
-        //             $tempTrack = $trackParser->parseObject($trackJSON);
+            if (array_key_exists("songs", $artistJSON))
+            {
+                // Ensure no more than 3 artists are returned
+                $artistCount = $artistCount + 1;
+                 // @codeCoverageIgnoreStart
+                if ($artistCount > 3)
+                {
+                    break;
+                }
+                // @codeCoverageIgnoreEnd
+                $array = $artistJSON["songs"];
+                foreach ($artistJSON["songs"] as $trackJSON)
+                {
+                    // Parse limited trackJSON to obtain url value.
+                    // The full track JSON will be fetched + parsed in fetchTrack() (including lyrics, which aren't present here)
+                    $tempTrack = $trackParser->parseObject($trackJSON);
 
-        //             if (!is_null($tempTrack))
-        //             {
-        //                 $track = $this->fetchTrack($tempTrack->url, $artist);
+                    if (!is_null($tempTrack))
+                    {
+                        $track = $this->fetchTrack($tempTrack->url, $artist);
 
-        //                 if (!is_null($track))
-        //                 {
-        //                     $artist->tracks->attach($track);
-        //                 }
-        //             }
-        //         }
+                        if (!is_null($track))
+                        {
+                            $artist->tracks->attach($track);
+                        }
+                    }
+                }
 
-        //         // Determine frequent lyrics for an Artist from the tracks.
-        //         $artist->frequentLyrics = Track::frequentLyricsFromTracks($artist->tracks);
+                // Determine frequent lyrics for an Artist from the tracks.
+                $artist->frequentLyrics = Track::frequentLyricsFromTracks($artist->tracks);
 
-        //         array_push($artists, $artist);
-        //     }
-        // }
+                array_push($artists, $artist);
+            }
+        }
 
-        // // Encode Artist objects to JSON to send to client.
-        // $serialized = array_map([$artistParser, "serializeObject"], $artists);
-        // $encoded = json_encode($serialized);
+        // Encode Artist objects to JSON to send to client.
+        $serialized = array_map([$artistParser, "serializeObject"], $artists);
+        $encoded = json_encode($serialized);
 
-        // // Allow cross-origin-requests so javascript can make requests.
-        // return response($encoded, 200)
-        //           ->header('Content-Type', 'application/json')
-        //           ->header('Access-Control-Allow-Origin', '*');
+        // Allow cross-origin-requests so javascript can make requests.
+        return response($encoded, 200)
+                  ->header('Content-Type', 'application/json')
+                  ->header('Access-Control-Allow-Origin', '*');
     }
 
     /*
