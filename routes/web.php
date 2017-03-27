@@ -19,6 +19,6 @@ include_once dirname(__FILE__) . '/../app/Parsers/LyricParser.php';
  *
  */
 
-$app->get('/search/{artist}', 'Server@searchArtists');
+$app->get('/search/{author}', 'Server@searchAuthors');
 
 ?>
