@@ -43,9 +43,30 @@ class Server extends Controller
     {
         // get the contents of the wikia search
         $location = "https://ieeexplore.ieee.org/gateway/ipsSearch.jsp?au=" . urlencode($artist);
+
         $file = simplexml_load_file($location);
-        echo "HERE";
-        echo $file->totalfound;
+
+        foreach ($file->document as $document) {
+            echo $document->title;
+            echo "<br>";
+
+            echo $document->authors;
+            echo "<br>";
+
+            echo $document->pubtitle;
+            echo "<br>";
+
+            echo $document->abstract;
+            echo "<br>";
+
+            echo $document->mdurl;
+            echo "<br>";
+
+            echo $document->pdf;
+            echo "<br>";
+            echo "<br>";
+        }
+
         return $file;
     }
      // @codeCoverageIgnoreEnd
