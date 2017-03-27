@@ -111,42 +111,6 @@ class Server extends Controller
         //           ->header('Content-Type', 'application/json')
         //           ->header('Access-Control-Allow-Origin', '*');
     }
-
-    /*
-     * Fetch track metadata for a given track URL.
-     *
-     * @param string $url
-     * @param author $author
-     *
-     * @return Track.
-     *
-     */
-    private function fetchTrack($url, $author)
-    {
-        $file = @file_get_contents($url);
-        if ($file == FALSE)
-        {
-            return null;
-        }
-
-        $json = json_decode($file, true);
-        // @codeCoverageIgnoreStart
-        // If no result key, there was an error so return null.
-        if (!array_key_exists("result", $json))
-        {
-            return null;
-        }
-         // @codeCoverageIgnoreEnd
-
-        $trackJSON = $json["result"];
-
-        $trackParser = new TrackParser();
-        $trackParser->author = $author;
-
-        $track = $trackParser->parseObject($trackJSON);
-
-        return $track;
-    }
 }
 
 ?>
