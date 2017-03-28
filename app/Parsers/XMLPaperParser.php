@@ -2,36 +2,34 @@
 include_once dirname(__FILE__) . '/Parser.php';
 include_once dirname(__FILE__) . '/../Model/Paper.php';
 
-
 /**
  * Parser to parse paper objects.
  */
 class XMLPaperParser implements Parser
 {
     /**
-    * Tracks that were written by the Authors to be parsed.
-    *
-    * @var ModelSet
-    */
-    var $paper;
+     * Papers that were written by the Authors to be parsed.
+     *
+     * @var ModelSet
+     */
+    public $paper;
 
     /**
      * Parses the XML and returns a paper object.
      *
      * @param XML document of the paper.
      *
-     * @return paper Returns an Author populated with data from $json.
+     * @return paper Returns an Author populated with data from $XML.
      */
 
-
-    function parseObject($XML)
+    public function parseObject($XML)
     {
-        $paper = new \Paper();
+        $paper = new Paper();
         $paper->authors = explode('; ', $XML->authors);
 
         $paper->title = $XML->title->__toString();
         $paper->identifier = $XML->title->__toString();
-        if (is_array($XML->thesaurusterms->term) || is_object($XML->thesaurusterms->term)){
+        if (is_array($XML->thesaurusterms->term) || is_object($XML->thesaurusterms->term)) {
 
             foreach ($XML->thesaurusterms->term as $term) {
 
@@ -42,44 +40,54 @@ class XMLPaperParser implements Parser
 
         $paper->abstract = $XML->abstract->__toString();
         $paper->conference = $XML->pubtitle->__toString();
+        $paper->download = $XML->mdurl->__toString();
+        $paper->bibtex = $this->parseBibtextLinkFromDownload($XML->arnumber->__toString());
+        //set as null until we can extract text
+        $paper->fullWords = null;
 
         return $paper;
 
     }
+
+    /**
+     * Returns the link to the citation by extracting the article number.
+     *
+     * @param Arnumber $arnumber The download link of the paper.
+     *
+     * @return string Returns the string representation of bibtex link.
+     */
+    function parseBibtextLinkFromDownload($arnumber)
+    {
+
+        $link = "http://ieeexplore.ieee.org/document/" . $arnumber . "/citations";
+
+        return $link;
+    }
+
     /**
      * Serializes an paper to JSON.
      *
-     * @param Author $Author The Author to be serialized.
+     * @param Paper $Paper The Paper to be serialized.
      *
-     * @return array Returns the JSON representation of the Author.
+     * @return array Returns the JSON representation of the Paper.
      */
-    function serializeObject($Author)
+    function serializeObject($Paper)
     {
-    //     // declare a TrackParser and LyricsParser for storing information about the Author and words
-    //     $paperParser = new PaperParser();
-    //     $paperParser->Author = $Author;
-    //     $paperParser = new LyricParser();
-    //     $paperParser->tracks = $Author->tracks;
-    //     $paperArray = [];
-    //     if (!is_null($Author->tracks))
-    //     {
-    //         // No "map" function for SplObjectStorage, so must map values manually
-    //         foreach ($Author->papers as $paper)
-    //         {
-    //             $json = $paperParser->serializeObject($paper);
-    //             $paperArray[] = $json;
-    //         }
-    //     }
-    //     // define a look-up table of relevant Author info
-    //     $json = [
-    //          "name" => $Author->name,
-    //          "identifier" => $Author->identifier,
-    //          "imageURL" => $Author->imageURL,
-    //          "tracks" => $paperArray,
-    //          "frequentLyrics" => array_map([$paperParser, "serializeObject"], $Author->frequentWords ?: []),
-    //     ];
-    //     return $json;
-    // }
+
+        // define a look-up table of relevant Paper info
+        $json = [
+             "title" => $Paper->title,
+             "bibtex" => $Paper->bibtex,
+             "download" => $Paper->download,
+             "pdf" => $Paper->pdf,
+             "fullWords" => $Paper->fullWords,
+             "frequentWords" => $Paper->frequentWords,
+             "authors" => $Paper->authors,
+             "keywords" => $Paper->keywords,
+             "abstract" => $Paper->abstract,
+             "conference" => $Paper->conference
+        ];
+        return $json;
     }
 }
 ?>

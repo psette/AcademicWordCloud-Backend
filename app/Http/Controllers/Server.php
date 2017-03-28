@@ -73,7 +73,7 @@ class Server extends Controller
             var_dump($paper);
         }
 
-        return $paper;
+        return $papers;
 
     }
 
@@ -91,25 +91,20 @@ class Server extends Controller
         // For IEEE testing keep true
 
         $IEEE = true;
+        $XMLPaperParser = new XMLPaperParser();
 
         if($IEEE){
-            $file = $this->get_IEEE_file($author);
+            $papers = $this->get_IEEE_file($author);
         }
 
-        if ($file == FALSE)
-        {
-            return "Error with request " . $author ;
-        }
-        return $file;
+        // Encode paper objects to JSON to send to client.
+        $serialized = array_map([$XMLPaperParser, "serializeObject"], $papers);
+        $encoded = json_encode($serialized);
 
-        // // Encode author objects to JSON to send to client.
-        // $serialized = array_map([$authorParser, "serializeObject"], $authors);
-        // $encoded = json_encode($serialized);
-
-        // // Allow cross-origin-requests so javascript can make requests.
-        // return response($encoded, 200)
-        //           ->header('Content-Type', 'application/json')
-        //           ->header('Access-Control-Allow-Origin', '*');
+        // Allow cross-origin-requests so javascript can make requests.
+        return response($encoded, 200)
+                  ->header('Content-Type', 'application/json')
+                  ->header('Access-Control-Allow-Origin', '*');
     }
 }
 
