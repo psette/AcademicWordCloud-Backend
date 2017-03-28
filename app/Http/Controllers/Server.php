@@ -47,11 +47,10 @@ class Server extends Controller
 
        if ($file == FALSE){
 
-                return "FILE IS NOT FOUND";
+            return "FILE IS NOT FOUND";
         }
 
-        $papers = $this->parseXMLObject($file);
-        return $papers;
+        return $file;
     }
      // @codeCoverageIgnoreEnd
 
@@ -65,12 +64,12 @@ class Server extends Controller
     public function parseXMLObject($file){
 
         $XMLPaperParser = new XMLPaperParser();
-        $papers = [ ];
+
+        $papers = array();
 
         foreach ($file->document as $document) {
             $paper = $XMLPaperParser->parseObject($document);
-            array_push($papers, $paper);
-            var_dump($paper);
+            $papers[] = $paper;
         }
 
         return $papers;
@@ -94,8 +93,11 @@ class Server extends Controller
         $XMLPaperParser = new XMLPaperParser();
 
         if($IEEE){
-            $papers = $this->get_IEEE_file($author);
+            $file = $this->get_IEEE_file($author);
         }
+
+        $papers = $this->parseXMLObject($file);
+
 
         // Encode paper objects to JSON to send to client.
         $serialized = array_map([$XMLPaperParser, "serializeObject"], $papers);

@@ -87,7 +87,8 @@ class XMLPaperParser implements Parser
              "abstract" => $Paper->abstract,
              "conference" => $Paper->conference
         ];
-        return $json;
+
+        return json_encode($json);
     }
 }
 ?>
