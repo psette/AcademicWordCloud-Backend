@@ -32,9 +32,13 @@ class PDFParser
         fwrite($fp, $result);
 
         try {
+
                 $pdf = $parser->parseFile("wtf_TEMP2.pdf");
+
         } catch (Exception $e) {
+
             return "PDF not parsed";
+
         }
 
 
@@ -42,12 +46,12 @@ class PDFParser
        return $text;
     }
     /**
-         * Scrapes the DOM of IEEE pdf url to get the actual pdf link.
-         *
-         * @param Link $Link The pdf link given by the IEEE .
-         *
-         * @return array Returns the String representation of the link.
-         */
+    * Scrapes the DOM of IEEE pdf url to get the actual pdf link.
+    *
+    * @param Link $Link The pdf link given by the IEEE .
+    *
+    * @return array Returns the String representation of the link.
+    */
     public static function getPDFLinkFromIEEE($link)
     {
         $cookies_file = dirname(__FILE__). '/../tmp/cookies.txt';

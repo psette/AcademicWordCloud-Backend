@@ -29,11 +29,11 @@ class XMLPaperParser implements Parser
         $paper = new \Paper();
         $PDFParser =  new \PDFParser();
 
-
         $paper->authors = explode('; ', $XML->authors);
 
         $paper->title = $XML->title->__toString();
         $paper->identifier = $XML->title->__toString();
+
         if (is_array($XML->thesaurusterms->term) || is_object($XML->thesaurusterms->term)) {
 
             foreach ($XML->thesaurusterms->term as $term) {
@@ -46,16 +46,14 @@ class XMLPaperParser implements Parser
         $paper->abstract = $XML->abstract->__toString();
         $paper->conference = $XML->pubtitle->__toString();
         $paper->download = $XML->mdurl->__toString();
+
         $paper->bibtex = $this->parseBibtextLinkFromDownload($XML->arnumber->__toString());
-        //set as null until we can extract text
-        $paper->fullWords = null;
 
         $paper->pdf = $PDFParser->getPDFLinkFromIEEE($XML->pdf->__toString());
 
-        $paper->fullWords = $PDFParser->getTextFromPDF($paper->pdf );
+        $paper->fullWords = $PDFParser->getTextFromPDF($paper->pdf);
 
         return $paper;
-
     }
 
     /**
