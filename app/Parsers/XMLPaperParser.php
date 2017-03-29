@@ -1,6 +1,7 @@
 <?php
 include_once dirname(__FILE__) . '/Parser.php';
 include_once dirname(__FILE__) . '/PDFParser.php';
+include_once dirname(__FILE__) . '/WordParser.php';
 
 include_once dirname(__FILE__) . '/../Model/Paper.php';
 include_once dirname(__FILE__) . '/../Model/Word.php';
@@ -30,7 +31,7 @@ class XMLPaperParser implements Parser
     {
         $paper = new \Paper();
         $PDFParser =  new \PDFParser();
-        $word = new Word();
+        $word = new WordParser();
 
         $paper->authors = explode('; ', $XML->authors);
 
@@ -57,7 +58,7 @@ class XMLPaperParser implements Parser
 
         $paper->fullWords = $PDFParser->getTextFromPDF($paper->pdf);
 
-        $word->parseWord($paper->title);
+        $word->parseWord ($paper->fullWords,$paper->title);
         return $paper;
     }
 
