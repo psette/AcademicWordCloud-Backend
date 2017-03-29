@@ -69,10 +69,7 @@ class PDFParser
         curl_setopt($curl, CURLOPT_VERBOSE, 1);
 
         $page = curl_exec($curl);
-        //echo $page;
-        //var_dump(htmlentities($page));
-        // $html = str_get_html($page);
-        //locate the frame html by separating the html string into two parts
+
         $locateFrame = explode('.pdf', $page);
         $filePath = explode('"', $locateFrame[0]);
         $lastElement = sizeof($filePath) - 1;
@@ -88,11 +85,5 @@ class PDFParser
         $pdf = $pdf . ".pdf";
 
         return  PDFParser::getTextFromPDF($pdf);
-        // echo count($locateEmbedArray);
-        //locate the beginning string of the src of the pdf
-        //$srcArray = explode('src="', $locateEmbedArray[1]);
-        //$src = explode('"', $srcArray[1]);
-        //return $src[0];
-
     }
 }
