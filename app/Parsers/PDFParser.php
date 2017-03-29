@@ -6,7 +6,8 @@ class PDFParser
 {
     public static function getTextFromPDF($pdf)
     {
-        $cookies_file = dirname(__FILE__). '/../tmp/cookies.txt';
+        $cookies_file = dirname(__FILE__). '/../tmp/cookie2.txt';
+        $parser = new \Smalot\PdfParser\Parser();
 
         $curl = curl_init();
         $headers[] = "Accept: */*";
@@ -15,34 +16,83 @@ class PDFParser
 
 
         curl_setopt($curl, CURLOPT_HTTPHEADER,  $headers);
-        curl_setopt($curl, CURLOPT_URL, 'http://ieeexplore.ieee.org/ielx5/4130641/4130642/04130757.pdf');
+        curl_setopt($curl, CURLOPT_URL, $pdf);
         curl_setopt($curl, CURLOPT_COOKIEJAR, $cookies_file);   // Cookie management.
         curl_setopt($curl, CURLOPT_COOKIEFILE, $cookies_file);
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($curl, CURLOPT_USERAGENT,'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.17 (KHTML, like Gecko) Chrome/24.0.1312.52 Safari/537.17');
-        curl_setopt($curl, CURLOPT_AUTOREFERER, true); 
+        curl_setopt($curl, CURLOPT_AUTOREFERER, true);
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
         curl_setopt($curl, CURLOPT_FOLLOWLOCATION, 1);
         curl_setopt($curl, CURLOPT_VERBOSE, 1);
 
         $result = curl_exec($curl);
         curl_close($curl);
-
-        $fp = fopen("temp_file.pdf", "w");
+        $fp = fopen("wtf_TEMP2.pdf", "w");
         fwrite($fp, $result);
 
-        // // Parse pdf file and build necessary objects.
-        // $doc = new DOMDocument();
-        // $doc->loadHTMLFile($pdf);
-        // echo $doc->saveHTML();
+        try {
+                $pdf = $parser->parseFile("wtf_TEMP2.pdf");
+        } catch (Exception $e) {
+            return "PDF not parsed";
+        }
 
-        // $parser = new \Smalot\PdfParser\Parser();
-        // $pdf = $parser->parseFile('https://www.acm.org/membership/NIC.pdf');
 
-        // //NOTE: Not sure why IEEE PDFS are all returning errors
-        // //$pdf = $parser->parseFile('http://ieeexplore.ieee.org/ielx5/4130641/4130642/04130757.pdf');
+        $text = $pdf->getText();
+       return $text;
+    }
+    /**
+         * Scrapes the DOM of IEEE pdf url to get the actual pdf link.
+         *
+         * @param Link $Link The pdf link given by the IEEE .
+         *
+         * @return array Returns the String representation of the link.
+         */
+    public static function getPDFLinkFromIEEE($link)
+    {
+        $cookies_file = dirname(__FILE__). '/../tmp/cookies.txt';
+        $curl = curl_init();
+        $headers[] = "Accept: */*";
+        $headers[] = "Connection: Keep-Alive";
+        $headers[] = "Content-type: application/x-www-form-urlencoded;charset=UTF-8";
 
-        // $text = $pdf->getText();
-        // echo $text;
+
+        curl_setopt($curl, CURLOPT_HTTPHEADER,  $headers);
+        curl_setopt($curl, CURLOPT_URL, $link);
+        curl_setopt($curl, CURLOPT_COOKIEJAR, $cookies_file);   // Cookie management.
+        curl_setopt($curl, CURLOPT_COOKIEFILE, $cookies_file);
+        curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($curl, CURLOPT_USERAGENT,'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.17 (KHTML, like Gecko) Chrome/24.0.1312.52 Safari/537.17');
+        curl_setopt($curl, CURLOPT_AUTOREFERER, true);
+        curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($curl, CURLOPT_FOLLOWLOCATION, 1);
+        curl_setopt($curl, CURLOPT_VERBOSE, 1);
+
+        $page = curl_exec($curl);
+        //echo $page;
+        //var_dump(htmlentities($page));
+        // $html = str_get_html($page);
+        //locate the frame html by separating the html string into two parts
+        $locateFrame = explode('.pdf', $page);
+        $filePath = explode('"', $locateFrame[0]);
+        $lastElement = sizeof($filePath) - 1;
+
+        $pdfPath = $filePath[$lastElement];
+
+        if ( $pdfPath[0] != 'h') {
+            $pdfPath = substr($pdfPath, 0, 4) . 'x' . substr($pdfPath, 4);
+           $pdf ="http://ieeexplore.ieee.org" . $pdfPath;
+        } else {
+            $pdf =  $pdfPath;
+        }
+        $pdf = $pdf . ".pdf";
+
+        return  PDFParser::getTextFromPDF($pdf);
+        // echo count($locateEmbedArray);
+        //locate the beginning string of the src of the pdf
+        //$srcArray = explode('src="', $locateEmbedArray[1]);
+        //$src = explode('"', $srcArray[1]);
+        //return $src[0];
+
     }
 }

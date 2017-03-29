@@ -1,5 +1,7 @@
 <?php
 include_once dirname(__FILE__) . '/Parser.php';
+include_once dirname(__FILE__) . '/PDFParser.php';
+
 include_once dirname(__FILE__) . '/../Model/Paper.php';
 
 
@@ -27,6 +29,8 @@ class XMLPaperParser implements Parser
     function parseObject($XML)
     {
         $paper = new \Paper();
+        $PDFParser =  new \PDFParser();
+
         $paper->authors = explode('; ', $XML->authors);
 
         $paper->title = $XML->title->__toString();
@@ -42,6 +46,8 @@ class XMLPaperParser implements Parser
 
         $paper->abstract = $XML->abstract->__toString();
         $paper->conference = $XML->pubtitle->__toString();
+
+        $paper->pdf = $PDFParser->getPDFLinkFromIEEE($XML->pdf->__toString());
 
         return $paper;
 
