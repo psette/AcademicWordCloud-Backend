@@ -3,6 +3,7 @@ include_once dirname(__FILE__) . '/Parser.php';
 include_once dirname(__FILE__) . '/PDFParser.php';
 
 include_once dirname(__FILE__) . '/../Model/Paper.php';
+include_once dirname(__FILE__) . '/../Model/Word.php';
 
 /**
  * Parser to parse paper objects.
@@ -15,6 +16,7 @@ class XMLPaperParser implements Parser
      * @var ModelSet
      */
     public $paper;
+    public $word;
 
     /**
      * Parses the XML and returns a paper object.
@@ -49,10 +51,13 @@ class XMLPaperParser implements Parser
 
         $paper->bibtex = $this->parseBibtextLinkFromDownload($XML->arnumber->__toString());
 
+
         $paper->pdf = $PDFParser->getPDFLinkFromIEEE($XML->pdf->__toString());
 
         $paper->fullWords = $PDFParser->getTextFromPDF($paper->pdf);
 
+        $word = new Word();
+        $word->parseWord();
         return $paper;
     }
 
