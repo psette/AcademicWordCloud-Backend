@@ -49,6 +49,8 @@ class XMLPaperParser implements Parser
 
         $paper->pdf = $PDFParser->getPDFLinkFromIEEE($XML->pdf->__toString());
 
+        $paper->fullWords = $PDFParser->getTextFromPDF($paper->pdf );
+
         return $paper;
 
     }

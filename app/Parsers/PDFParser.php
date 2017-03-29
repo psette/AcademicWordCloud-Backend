@@ -84,6 +84,6 @@ class PDFParser
         }
         $pdf = $pdf . ".pdf";
 
-        return  PDFParser::getTextFromPDF($pdf);
+        return  $pdf;
     }
 }
