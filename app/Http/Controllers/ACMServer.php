@@ -27,6 +27,8 @@ class ACMServer extends BaseController
 {
     public function searchPapers(Request $request, $searchTerm)
     {
+        $maximumPaperCount = (int)($request->input('count'));
+        
         $artists = [];
 
         $artist = new Artist();
@@ -71,12 +73,20 @@ class ACMServer extends BaseController
         $trackParser = new ACMPaperParser();
         $trackParser->artist = $artist;
 
+        $count = 0;
+
         foreach ($json as $trackJSON)
         {
+            if ($count == $maximumPaperCount)
+            {
+                break;
+            }
+
             $track = $trackParser->parseObject($trackJSON);
             if (!is_null($track))
             {
                 $artist->tracks->attach($track);
+                $count++;
             }
         }
 
