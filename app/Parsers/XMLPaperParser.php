@@ -30,6 +30,7 @@ class XMLPaperParser implements Parser
     {
         $paper = new \Paper();
         $PDFParser =  new \PDFParser();
+        $word = new Word();
 
         $paper->authors = explode('; ', $XML->authors);
 
@@ -56,8 +57,7 @@ class XMLPaperParser implements Parser
 
         $paper->fullWords = $PDFParser->getTextFromPDF($paper->pdf);
 
-        $word = new Word();
-        $word->parseWord();
+        $word->parseWord($paper->title);
         return $paper;
     }
 
