@@ -36,7 +36,7 @@ class LyricParser implements Parser
         $words = preg_replace('/[^a-z0-9]+/i', ' ', $lyrics);
         $words = explode(" ", $words);
         // Sanitize words into their root words.
-        $strippedWords = $this->stripStopWords($words);
+        $strippedWords = $words;
         $lyrics = [];
         foreach ($strippedWords as $word)
         {
