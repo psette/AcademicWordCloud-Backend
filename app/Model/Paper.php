@@ -20,11 +20,11 @@ class Paper
     var $identifier;
 
     /**
-     * The bibtext URL of the paper.
+     * The bibtex URL of the paper.
      *
      * @var string
      */
-    var $bibtext;
+    var $bibtex;
 
     /**
      * The download URL of the paper.
@@ -41,13 +41,6 @@ class Paper
     var $pdf;
 
     /**
-     * The digital library URL of the paper.
-     *
-     * @var string
-     */
-    var $digitalLibrary;
-
-    /**
      * The complete words for the paper.
      *
      * @var string
@@ -59,7 +52,7 @@ class Paper
      *
      * @var array
      */
-    var $frequentwords;
+    var $frequentWords;
 
     /**
      * The authors that composed this paper.
@@ -93,7 +86,7 @@ class Paper
      */
     function __construct()
     {
-        $this->frequentwords = [];
+        $this->frequentWords = [];
         $this->authors = [];
         $this->keywords = [];
 

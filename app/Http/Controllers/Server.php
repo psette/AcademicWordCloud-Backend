@@ -47,11 +47,10 @@ class Server extends Controller
 
        if ($file == FALSE){
 
-                return "FILE IS NOT FOUND";
+            return "FILE IS NOT FOUND";
         }
 
-        $papers = $this->parseXMLObject($file);
-        return $papers;
+        return $file;
     }
      // @codeCoverageIgnoreEnd
 
@@ -65,15 +64,15 @@ class Server extends Controller
     public function parseXMLObject($file){
 
         $XMLPaperParser = new XMLPaperParser();
-        $papers = [ ];
+
+        $papers = array();
 
         foreach ($file->document as $document) {
             $paper = $XMLPaperParser->parseObject($document);
-            array_push($papers, $paper);
-            var_dump($paper);
+            $papers[] = $paper;
         }
 
-        return $paper;
+        return $papers;
 
     }
 
@@ -91,25 +90,23 @@ class Server extends Controller
         // For IEEE testing keep true
 
         $IEEE = true;
+        $XMLPaperParser = new XMLPaperParser();
 
         if($IEEE){
             $file = $this->get_IEEE_file($author);
         }
 
-        if ($file == FALSE)
-        {
-            return "Error with request " . $author ;
-        }
-        return $file;
+        $papers = $this->parseXMLObject($file);
 
-        // // Encode author objects to JSON to send to client.
-        // $serialized = array_map([$authorParser, "serializeObject"], $authors);
-        // $encoded = json_encode($serialized);
 
-        // // Allow cross-origin-requests so javascript can make requests.
-        // return response($encoded, 200)
-        //           ->header('Content-Type', 'application/json')
-        //           ->header('Access-Control-Allow-Origin', '*');
+        // Encode paper objects to JSON to send to client.
+        $serialized = array_map([$XMLPaperParser, "serializeObject"], $papers);
+        $encoded = json_encode($serialized);
+
+        // Allow cross-origin-requests so javascript can make requests.
+        return response($encoded, 200)
+                  ->header('Content-Type', 'application/json')
+                  ->header('Access-Control-Allow-Origin', '*');
     }
 }
 
