@@ -1,0 +1,27 @@
+# HTTP Cookie File for domains related to ieee.org.
+# To download this content click here, press return (Mac only) or copy and paste into a cookies.txt file.
+# It can be then used by wget and other standard complaint tools.
+# Example:  wget -x --load-cookies cookies.txt http://ieeexplore.ieee.org/ielx2/602/4411/00170428.pdf?tp=&arnumber=170428&isnumber=4411
+#
+services28.ieee.org	FALSE	/socialmedia	FALSE	0	visited	yes
+www.ieee.org	FALSE	/	FALSE	0	IntradocLoginState	1
+www.ieee.org	FALSE	/	FALSE	0	TS01c9c5e8	012f35062358887d24eac241448727b199226a1ff37fec972ae4386fd5f5e141aec713e459415aaa30cba17c16ca8d2239366e02a5
+.ieee.org	TRUE	/	FALSE	0	TS01deb27c	012f350623c1079911b8dae52368d6bd1ee2dce76b848dfeb81674cd4f10804788fd788d8b23130aa7d9ca21471f0ff213884126ad57b922ca666536bada912914a4636ef4
+www.ieee.org	FALSE	/	FALSE	1553682347	WT_FPC	id=21572f2ea1229babdea1490575696240:lv=1490575696240:ss=1490575696240
+.ieeexplore.ieee.org	TRUE	/	FALSE	1963687357	cp_anonymousID	badb220ff6e301a30cb046b65535334e68181206246
+ieee.org	FALSE	/	FALSE	0	TS01c9c5e8	012f350623e729480a0f5e8beea6396d52235e37da2fc94eecd34d1fca0a11713ddc6d4789
+ieeexplore.ieee.org	FALSE	/	FALSE	0	cmTPSet	Y
+.ieeexplore.ieee.org	TRUE	/	FALSE	1963689109	CoreID6	19906850056614906491097&ci=52820000
+.ieeexplore.ieee.org	TRUE	/	FALSE	1963697803	cp_user_institution_id_unique	c35471f2558b98b39411ef172e09af7a
+.ieee.org	TRUE	/	FALSE	1646205106	unicaID	Zw7C2latPWa-aPJQxI8
+.ieee.org	TRUE	/	FALSE	0	ipList	68.181.207.40
+.ieee.org	TRUE	/	FALSE	0	ipCheck	68.181.207.40
+tagxplore.ieee.org	FALSE	/	FALSE	0	TS01e5e42f	012f35062398f10431d15fc94579552d5e4f17e9bdb88456ee244abb77adb17b2494f45062
+.ieee.org	TRUE	/	FALSE	0	ERIGHTS	x2FjJlktpLNiLt5fpIrqcpnhxxJYCJqIFna*lWx2Bx2Bx2B0LYRjUR7ML1M3EHvgx3Dx3D-18x2d2RM1IA4s74vsoix2BefrHXeAx3Dx3DOW6qm4f8XFUiTffUnEIEywx3Dx3D-EaKd2XR2eRsi32aYaJQIvwx3Dx3D-VAwWmHx2BMhF6cTr1AHXl8VQx3Dx3D
+.ieee.org	TRUE	/	FALSE	0	seqId	6031
+.ieee.org	TRUE	/	FALSE	0	TS01f64340	012f350623b88344dfb7e494fc66bfb6ebb8487f9af0d551c252174a524432937693d5f43f58bd8c605bfbb48f0f4b8e9f6d82f8a3d1c23e987ce8071ac91dc84f5965e7ee243c0169a9a4d4ac1e91dc5d7f92d4d03f2beb37751c640cea19e1be1602210301ddfc3069c220f728f6e5982ad9e87f8002f2bc96fcd59af73ad417a27a927a1c774a2451865f590c5c0a7aaf40d730128a025c4eb74e234ee645f7442d8feccca37d0ae8eea9f558973eab6a3958ff8e4e33f1dbad3a12490ddad5599f86ac443b12582983834dac529baa9b4ceca502e2e29feb9fe9f095e558f384acea19eebc7e0e9b7fad36d1cc598e0c0667d1fd10d0dd724a8b7a8b49187af38bc03ec7324d632297ea7d0dfd37b518664542cda81f80b6dea952cc115f22fc68be35
+.ieee.org	TRUE	/	FALSE	1522309957	utag_main	v_id:015b13c19bb3001dab85b3f4ded105078002b07000ac2$_sn:3$_ss:0$_st:1490775757218$ses_id:1490773863670%3Bexp-session$_pn:2%3Bexp-session
+.ieeexplore.ieee.org	TRUE	/	FALSE	0	52820000_clogin	v=1&l=1490773864&e=1490775758621
+ieeexplore.ieee.org	FALSE	/	FALSE	0	JSESSIONID	6YP4YbyFTTDh0WpCPM97xMvSTRh82nGnLn5rRhyvMLtqwKQ0LphS!-65405620
+ieeexplore.ieee.org	FALSE	/	FALSE	1490860821	WLSESSION	908223116.20480.0000
+ieeexplore.ieee.org	FALSE	/	FALSE	0	TS011813a0	012f35062334afac7554b57181d17d5d9699372e139b8d8ad9e83587257961cdee29aae3a8a4f22a5dcbb5c7fd8725948a85679fa9ca95446462b7e128bfe64e2c32aaa108
