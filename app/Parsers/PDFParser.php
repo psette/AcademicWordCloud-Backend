@@ -6,7 +6,7 @@ class PDFParser
 {
     public static function getTextFromPDF($pdf)
     {
-        $cookies_file = dirname(__FILE__). '/../tmp/cookie2.txt';
+        $cookies_file = dirname(__FILE__). '/../tmp/ieee-pdf-access-cookies.txt';
         $parser = new \Smalot\PdfParser\Parser();
 
         $curl = curl_init();
@@ -41,9 +41,9 @@ class PDFParser
 
         }
 
-
+        fclose($fp);
         $text = $pdf->getText();
-       return $text;
+        return $text;
     }
     /**
     * Scrapes the DOM of IEEE pdf url to get the actual pdf link.
@@ -54,7 +54,7 @@ class PDFParser
     */
     public static function getPDFLinkFromIEEE($link)
     {
-        $cookies_file = dirname(__FILE__). '/../tmp/cookies.txt';
+        $cookies_file = dirname(__FILE__). '/../tmp/ieee-main-access-cookies.txt';
         $curl = curl_init();
         $headers[] = "Accept: */*";
         $headers[] = "Connection: Keep-Alive";
