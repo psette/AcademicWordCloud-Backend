@@ -70,7 +70,6 @@ class Server extends Controller
         foreach ($file->document as $document) {
             $paper = $XMLPaperParser->parseObject($document);
             array_push($papers, $paper);
-            var_dump($paper);
         }
 
         return $papers;
@@ -98,13 +97,14 @@ class Server extends Controller
         }
 
         // Encode paper objects to JSON to send to client.
-        $serialized = array_map([$XMLPaperParser, "serializeObject"], $papers);
-        $encoded = json_encode($serialized);
+        // $serialized = array_map([$XMLPaperParser, "serializeObject"], $papers);
+        // $encoded = json_encode($serialized);
 
-        // Allow cross-origin-requests so javascript can make requests.
-        return response($encoded, 200)
-                  ->header('Content-Type', 'application/json')
-                  ->header('Access-Control-Allow-Origin', '*');
+        // // Allow cross-origin-requests so javascript can make requests.
+        // return response($encoded, 200)
+        //           ->header('Content-Type', 'application/json')
+        //           ->header('Access-Control-Allow-Origin', '*');
+        return;
     }
 }
 
