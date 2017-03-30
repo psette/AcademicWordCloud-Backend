@@ -2,11 +2,13 @@
 
 namespace App\Http\Controllers;
 
+include_once dirname(__FILE__) . '/../../Model/Paper.php';
 include_once dirname(__FILE__) . '/../../Model/Track.php';
 include_once dirname(__FILE__) . '/../../Model/Artist.php';
 include_once dirname(__FILE__) . '/../../Model/Lyric.php';
 
 include_once dirname(__FILE__) . '/../../Parsers/ACMPaperParser.php';
+include_once dirname(__FILE__) . '/../../Parsers/PaperParser.php';
 include_once dirname(__FILE__) . '/../../Parsers/TrackParser.php';
 include_once dirname(__FILE__) . '/../../Parsers/ArtistParser.php';
 include_once dirname(__FILE__) . '/../../Parsers/LyricParser.php';
@@ -14,6 +16,7 @@ include_once dirname(__FILE__) . '/../../Parsers/LyricParser.php';
 use Laravel\Lumen\Routing\Controller as BaseController;
 use Illuminate\Http\Request;
 
+use \Paper as Paper;
 use \Artist as Artist;
 use \Track as Track;
 use \Lyric as Lyric;
@@ -22,6 +25,7 @@ use \ArtistParser as ArtistParser;
 use \TrackParser as TrackParser;
 use \ACMPaperParser as ACMPaperParser;
 use \LyricParser as LyricParser;
+use \PaperParser as PaperParser;
 
 class ACMServer extends BaseController
 {
@@ -31,16 +35,11 @@ class ACMServer extends BaseController
         
         $artists = [];
 
-        $artist = new Artist();
-        $artist->name = $searchTerm;
-        $artist->identifier = $artist->name;
-        $artist->imageURL = "https://cdn1.iconfinder.com/data/icons/appicns/513/appicns_iTunes.png";
-
         // Get cURL resource
         $ch = curl_init();
 
         // Set url
-        curl_setopt($ch, CURLOPT_URL, 'http://api.acm.org/dl/v1/searchDLNodes?hasFullText=yes&limit=20&offset=0&orderBy=iosTimestamp%2Casc&q=' . $searchTerm);
+        curl_setopt($ch, CURLOPT_URL, 'http://api.acm.org/dl/v1/searchDLNodes?hasFullText=yes&limit=50&offset=0&orderBy=iosTimestamp%2Casc&q=' . $searchTerm);
 
         // Set method
         curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'GET');
@@ -68,35 +67,43 @@ class ACMServer extends BaseController
 
         $json = json_decode($responseText, true);
 
-        $artistParser = new ArtistParser();
+        $paperParser = new ACMPaperParser();
+        $paperSerializer = new PaperParser();
 
-        $trackParser = new ACMPaperParser();
-        $trackParser->artist = $artist;
+        $papers = [];
 
-        $count = 0;
-
-        foreach ($json as $trackJSON)
+        foreach ($json as $paperJSON)
         {
-            if ($count == $maximumPaperCount)
+            if (count($papers) == $maximumPaperCount)
             {
                 break;
             }
 
-            $track = $trackParser->parseObject($trackJSON);
-            if (!is_null($track))
+            $paper = $paperParser->parseObject($paperJSON);
+            if (!is_null($paper))
             {
-                $artist->tracks->attach($track);
-                $count++;
+                array_push($papers, $paper);
             }
         }
+        
+        $artist = new Artist();
+        $artist->name = $searchTerm;
+        $artist->identifier = $artist->name;
+        $artist->imageURL = "https://cdn1.iconfinder.com/data/icons/appicns/513/appicns_iTunes.png";
 
-        // Determine frequent lyrics for an Artist from the tracks.
-        $artist->frequentLyrics = Track::frequentLyricsFromTracks($artist->tracks);
+        // Determine frequent words from the papers.
+        $artist->frequentLyrics = Paper::frequentWordsFromPapers($papers);
         
         array_push($artists, $artist);
         
         // Encode Artist objects to JSON to send to client.
+        $artistParser = new ArtistParser();
         $serialized = array_map([$artistParser, "serializeObject"], $artists);
+
+        $serializedPapers = array_map([$paperSerializer, "serializeObject"], $papers);
+
+        $serialized[0]["tracks"] = $serializedPapers;
+
         $encoded = json_encode($serialized);
 
         // Allow cross-origin-requests so javascript can make requests.
