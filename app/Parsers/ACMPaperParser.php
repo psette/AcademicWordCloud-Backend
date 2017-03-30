@@ -5,7 +5,7 @@ include_once dirname(__FILE__) . '/../Model/Track.php';
 class ACMPaperParser implements Parser
 {
     var $artist;
-    
+
     public function parseObject($json)
     {
         $track = new Track();
@@ -42,6 +42,6 @@ class ACMPaperParser implements Parser
 
     function serializeObject($track)
     {
-        
+
     }
 }

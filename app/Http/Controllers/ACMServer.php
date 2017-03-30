@@ -82,9 +82,9 @@ class ACMServer extends BaseController
 
         // Determine frequent lyrics for an Artist from the tracks.
         $artist->frequentLyrics = Track::frequentLyricsFromTracks($artist->tracks);
-        
+
         array_push($artists, $artist);
-        
+
         // Encode Artist objects to JSON to send to client.
         $serialized = array_map([$artistParser, "serializeObject"], $artists);
         $encoded = json_encode($serialized);
@@ -95,6 +95,6 @@ class ACMServer extends BaseController
                   ->header('Access-Control-Allow-Origin', '*');
     }
 
-    
+
 }
 ?>
