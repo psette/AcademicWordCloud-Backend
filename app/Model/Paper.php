@@ -1,7 +1,7 @@
 <?php
 
 /**
- * A musical paper composed by an Author.
+ * A paper composed by an Author.
  */
 class Paper
 {
