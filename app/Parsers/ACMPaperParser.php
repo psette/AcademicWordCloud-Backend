@@ -28,6 +28,24 @@ class ACMPaperParser implements Parser
             $keyword = $tag["tag"];
             array_push($paper->keywords, $keyword);
         }
+        
+        if (array_key_exists("attribs", $json))
+        {
+            $array = $json["attribs"];
+
+            foreach ($array as $attributes)
+            {
+                if (strcmp($attributes["type"], "fulltext") == 0 && strcmp($attributes["format"], "pdf") == 0)
+                {
+                    if (array_key_exists("source", $attributes))
+                    {
+                        $paper->pdf = "http://api.acm.org/dl/v1/download?type=fulltext&url=" . urlencode($attributes["source"]);
+                        break;
+                    } 
+                }
+            }
+        }
+        
 
         if (array_key_exists("abstract", $json))
         {
@@ -44,6 +62,11 @@ class ACMPaperParser implements Parser
         else
         {
             $paper->frequentWords = [];
+        }
+
+        if (is_null($paper->pdf))
+        {
+            return null;
         }
 
         return $paper;
