@@ -40,7 +40,7 @@ class WordParser implements Parser
             }
             else
             {
-                $word = new Lyric();
+                $word = new Word();
                 $word->stringValue = $term;
                 $word->identifier = $term;
                 if (!is_null($this->papers))
