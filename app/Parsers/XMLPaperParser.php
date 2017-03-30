@@ -9,8 +9,7 @@ include_once dirname(__FILE__) . '/../Model/Word.php';
 /**
  * Parser to parse paper objects.
  */
-class XMLPaperParser implements Parser
-{
+class XMLPaperParser implements Parser{
     /**
      * Papers that were written by the Authors to be parsed.
      *
@@ -27,8 +26,7 @@ class XMLPaperParser implements Parser
      * @return paper Returns an Author populated with data from $XML.
      */
 
-    public function parseObject($XML)
-    {
+    public function parseObject($XML){
         $paper = new \Paper();
         $PDFParser =  new \PDFParser();
         $word = new WordParser();
@@ -44,7 +42,6 @@ class XMLPaperParser implements Parser
 
                 array_push($paper->keywords, $term->__toString());
             }
-
         }
 
         $paper->abstract = $XML->abstract->__toString();
@@ -69,8 +66,7 @@ class XMLPaperParser implements Parser
      *
      * @return string Returns the string representation of bibtex link.
      */
-    function parseBibtextLinkFromDownload($arnumber)
-    {
+    function parseBibtextLinkFromDownload($arnumber){
 
         $link = "http://ieeexplore.ieee.org/document/" . $arnumber . "/citations";
 
@@ -84,8 +80,7 @@ class XMLPaperParser implements Parser
      *
      * @return array Returns the JSON representation of the Paper.
      */
-    function serializeObject($Paper)
-    {
+    function serializeObject($Paper){
 
         // define a look-up table of relevant Paper info
         $json = [
@@ -100,7 +95,6 @@ class XMLPaperParser implements Parser
              "abstract" => $Paper->abstract,
              "conference" => $Paper->conference
         ];
-
         return json_encode($json);
     }
 }
