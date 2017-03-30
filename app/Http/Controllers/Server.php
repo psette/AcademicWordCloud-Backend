@@ -71,6 +71,7 @@ class Server extends Controller
             $paper = $XMLPaperParser->parseObject($document);
             $papers[] = $paper;
         }
+        $papers["HEREITIS"]->$XMLPaperParser->alllWords;
 
         return $papers;
 
@@ -104,9 +105,7 @@ class Server extends Controller
         $encoded = json_encode($serialized);
 
         // Allow cross-origin-requests so javascript can make requests.
-        return response($encoded, 200)
-                  ->header('Content-Type', 'application/json')
-                  ->header('Access-Control-Allow-Origin', '*');
+        return ;
     }
 }
 
