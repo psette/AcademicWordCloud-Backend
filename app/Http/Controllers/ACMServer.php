@@ -51,17 +51,17 @@ class ACMServer extends BaseController
         // Set headers
         curl_setopt($ch, CURLOPT_HTTPHEADER, [
         "api_key: 98BE4EB46E5AA6A1016EA327E05B1429856851C10FB54C1602336525B2AC1090",
-        "Cookie: JSESSIONID=FC069D9261B990B2B66BAB26F8392AEE",
+        "auth_token: 4BAB6929D28933EEE05010AC5A0A141F",
         ]
         );
 
         // Send the request & save response to $resp
         $responseText = curl_exec($ch);
 
+        curl_close($ch);
+
         if (is_null($responseText))
         {
-            curl_close($ch);
-
             $response = json_encode($artists);
             return $response;
         }
@@ -92,7 +92,10 @@ class ACMServer extends BaseController
                         // If $author ends with $searchTerm, it's a match.
                         if (strripos($author, $searchTerm, 0) === $index)
                         {
-                            array_push($papers, $paper);
+                            if ($this->parsePaperPDF($paper))
+                            {
+                                array_push($papers, $paper);
+                            }
                             break;
                         }
                     }
@@ -100,7 +103,10 @@ class ACMServer extends BaseController
                 else 
                 {
                     // Assume that if it was returned from our search, it matches well enough.
-                    array_push($papers, $paper);
+                    if ($this->parsePaperPDF($paper))
+                    {
+                        array_push($papers, $paper);
+                    }
                 }
             }
         }
@@ -129,6 +135,43 @@ class ACMServer extends BaseController
         return response($encoded, 200)
                   ->header('Content-Type', 'application/json')
                   ->header('Access-Control-Allow-Origin', '*');
+    }
+
+    public function parsePaperPDF($paper)
+    {
+        // Get cURL resource
+        $ch = curl_init();
+
+        // Set url
+        curl_setopt($ch, CURLOPT_URL, $paper->pdf);
+
+        // Set method
+        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'GET');
+
+        // Set options
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+
+        // Set headers
+        curl_setopt($ch, CURLOPT_HTTPHEADER, [
+        "api_key: 98BE4EB46E5AA6A1016EA327E05B1429856851C10FB54C1602336525B2AC1090",
+        "auth_token: 4BAB6929D28933EEE05010AC5A0A141F",
+        ]
+        );
+
+        // Send the request & save response to $resp
+        $responseText = curl_exec($ch);
+
+        curl_close($ch);
+
+        $json = json_decode($responseText, true);
+        if (is_null($json) || !array_key_exists("message", $json))
+        {
+            return false;
+        }
+
+        $paper->pdf = $json["message"];
+
+        return true;
     }
 }
 ?>
