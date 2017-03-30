@@ -40,7 +40,7 @@ class ACMServer extends BaseController
         $ch = curl_init();
 
         // Set url
-        curl_setopt($ch, CURLOPT_URL, 'http://api.acm.org/dl/v1/searchDLNodes?hasFullText=yes&limit=50&offset=0&orderBy=iosTimestamp%2Casc&q=' . $searchTerm);
+        curl_setopt($ch, CURLOPT_URL, 'http://api.acm.org/dl/v1/searchDLNodes?hasFullText=yes&limit=100&offset=0&orderBy=iosTimestamp%2Casc&q=' . $searchTerm);
 
         // Set method
         curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'GET');
