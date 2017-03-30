@@ -93,7 +93,7 @@ class Paper
     }
 
     /**
-     * Calculates the most frequent words from a set of papers.
+     * Calculates the most frequent lyrics from a set of Tracks.
      *
      * @param ModelSet $papers
      *
@@ -102,39 +102,39 @@ class Paper
      */
     static function frequentWordsFromPapers($papers)
     {
-        // $words = [];
+        $words = [];
 
-        // if (is_null($papers))
-        // {
-        //     return $words;
-        // }
+        if (is_null($papers))
+        {
+            return $words;
+        }
 
-        // foreach ($papers as $paper)
-        // {
-        //     foreach ($paper->frequentwords as $frequentLyric)
-        //     {
-        //         $lyric = null;
+        foreach ($papers as $paper)
+        {
+            foreach ($paper->frequentWords as $frequentWord)
+            {
+                $word = null;
 
-        //         if (array_key_exists($frequentLyric->stringValue, $words))
-        //         {
-        //             $lyric = $words[$frequentLyric->stringValue];
-        //         }
-        //         else
-        //         {
-        //             $lyric = new Lyric();
-        //             $lyric->stringValue = $frequentLyric->stringValue;
-        //             $lyric->identifier = $frequentLyric->stringValue;
-        //         }
+                if (array_key_exists($frequentWord->stringValue, $words))
+                {
+                    $word = $words[$frequentWord->stringValue];
+                }
+                else
+                {
+                    $word = new Word();
+                    $word->stringValue = $frequentWord->stringValue;
+                    $word->identifier = $frequentWord->stringValue;
+                }
 
-        //         $lyric->frequency = $lyric->frequency + $frequentLyric->frequency;
-        //         $lyric->papers->attach($paper);
+                $word->frequency = $word->frequency + $frequentWord->frequency;
+                $word->papers->attach($paper);
 
-        //         $words[$frequentLyric->stringValue] = $lyric;
-        //     }
-        // }
+                $words[$frequentWord->stringValue] = $word;
+            }
+        }
 
-        // usort($words, ["Lyric", "compareByFrequency"]);
+        usort($words, ["Word", "compareByFrequency"]);
 
-        // return $words;
+        return $words;
     }
 }

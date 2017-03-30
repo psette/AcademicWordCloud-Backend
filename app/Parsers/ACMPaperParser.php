@@ -1,47 +1,45 @@
 <?php
 include_once dirname(__FILE__) . '/Parser.php';
-include_once dirname(__FILE__) . '/../Model/Track.php';
+include_once dirname(__FILE__) . '/WordParser.php';
+include_once dirname(__FILE__) . '/../Model/Paper.php';
 
 class ACMPaperParser implements Parser
-{
-    var $artist;
-    
+{    
     public function parseObject($json)
     {
-        $track = new Track();
+        $paper = new Paper();
 
-        $track->name = $json["title"];
+        $paper->title = $json["title"];
         if (array_key_exists("subtitle", $json))
         {
-            $track->name .= ": " . $json["subtitle"];
+            $paper->title .= ": " . $json["subtitle"];
         }
 
-        $track->identifier = $json["objectId"];
+        $paper->identifier = $json["objectId"];
+
 
         if (array_key_exists("abstract", $json))
         {
-            $track->lyrics = $json["abstract"];
+            $paper->fullWords = $json["abstract"];
 
-            $tracks = new ModelSet();
-            $tracks->attach($track);
+            $papers = new ModelSet();
+            $papers->attach($paper);
 
-            $lyricParser = new LyricParser();
-            $lyricParser->tracks = $tracks;
+            $wordParser = new WordParser();
+            $wordParser->papers = $papers;
 
-            $track->frequentLyrics = $lyricParser->parseObject($json["abstract"]);
+            $paper->frequentWords = $wordParser->parseObject($json["abstract"]);
         }
         else
         {
-            $track->frequentLyrics = [];
+            $paper->frequentWords = [];
         }
 
-        $track->artist = $this->artist;
-
-        return $track;
+        return $paper;
     }
 
     function serializeObject($track)
     {
-        
+        // Do not use
     }
 }
