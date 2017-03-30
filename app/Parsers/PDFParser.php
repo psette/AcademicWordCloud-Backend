@@ -43,7 +43,7 @@ class PDFParser
 
 
         $text = $pdf->getText();
-       return $text;
+        return $text;
     }
     /**
     * Scrapes the DOM of IEEE pdf url to get the actual pdf link.
