@@ -45,24 +45,6 @@ class ACMPaperParser implements Parser
                 }
             }
         }
-        
-
-        if (array_key_exists("abstract", $json))
-        {
-            $paper->fullWords = $json["abstract"];
-
-            $papers = new ModelSet();
-            $papers->attach($paper);
-
-            $wordParser = new WordParser();
-            $wordParser->papers = $papers;
-
-            $paper->frequentWords = $wordParser->parseObject($json["abstract"]);
-        }
-        else
-        {
-            $paper->frequentWords = [];
-        }
 
         if (is_null($paper->pdf))
         {
