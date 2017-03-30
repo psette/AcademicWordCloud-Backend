@@ -28,11 +28,9 @@ class PDFParser
 
         $result = curl_exec($curl);
         curl_close($curl);
+        $fp = fopen("wtf_TEMP2.pdf", "w");
+        fwrite($fp, $result);
 
-        $tmpfile = tempnam(sys_get_temp_dir(), "temp_PDF");
-
-        $handle = fopen($tmpfile, "w");
-        fwrite($handle, $result);
         try {
 
                 $pdf = $parser->parseFile("wtf_TEMP2.pdf");
@@ -43,11 +41,9 @@ class PDFParser
 
         }
 
-        fclose($handle);
-        unlink($tmpfile);
 
         $text = $pdf->getText();
-        return $text;
+       return $text;
     }
     /**
     * Scrapes the DOM of IEEE pdf url to get the actual pdf link.

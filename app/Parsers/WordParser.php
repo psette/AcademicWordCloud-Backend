@@ -6,25 +6,32 @@ class WordParser {
         //call parse function on paper to get array of words
 
         //parse the string -> turn into array of words
-        //$comp = preg_split('/ +/', $var);
-        $paperName = "Paper Identifer goes hereeee";
-
-        $s="Your name is one of the most important words for you to know. You hear your name whenever
-a person says it. We like it if it is whispered to you in a nice tone for something you have done.
-We love hearing the sound of our name repeated over and over.";
-      //  $arr = explode(" ", $s);
-      //  $wordList = preg_split('/ +/', $s);
 
         $wordFrequencyInPaper = array_count_values(str_word_count($paperText, 1)) ;
         $words = [];
         foreach($wordFrequencyInPaper as $nugget => $value){
             $word = new Word();
-            $word->istringValue= $nugget;
+            $word->stringValue= $nugget;
             $word->frequency = $value;
-            array_push($words, $word);
             array_push($word->papers, $paperName);
+            array_push($words, $word);
         }
         return $words;
-
+    }
+     /**
+     * Serializes a word to JSON.
+     *
+     * @param word $lyric Lyric to be serialized.
+     *
+     * @return array Returns the JSON representation of the word.
+     */
+    function serializeObject($word)
+    {
+        $json = [
+             "stringValue" => $word->stringValue,
+             "frequency" => $word->frequency,
+             "paper" => $word->papers
+        ];
+        return $json;
     }
 }
