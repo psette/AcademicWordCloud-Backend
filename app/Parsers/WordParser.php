@@ -5,7 +5,7 @@ class WordParser {
 
    // var allWords;
     function cmp($a, $b){
-            return $a->frequency >= $b->frequency;
+            return $a->frequency <= $b->frequency;
     }
 
     function parseWord($paperText,$paperName ){
