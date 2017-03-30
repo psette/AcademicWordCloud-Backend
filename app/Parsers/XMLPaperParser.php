@@ -30,6 +30,7 @@ class XMLPaperParser implements Parser{
         $paper = new \Paper();
         $PDFParser =  new \PDFParser();
         $word = new WordParser();
+        echo "Parsing  $XML->totalfound papers.\n";
 
         $paper->authors = explode('; ', $XML->authors);
 
