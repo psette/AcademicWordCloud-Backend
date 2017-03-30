@@ -27,17 +27,9 @@ class Word
     var $papers;
 
     /**
-     * A Map of every paper with the word and the frequency of the word.
-     *
-     * @var paperWordFrequency
-     */
-    var $paperWordFrequency;
-
-    /**
      * The Word constructor.
      */
     function __construct(){
         $this->papers = [];
-        $this->paperWordFrequency = [];
     }
 }

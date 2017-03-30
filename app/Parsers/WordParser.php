@@ -4,27 +4,25 @@ include_once dirname(__FILE__) . '/../Model/Word.php';
 class WordParser {
 
    // var allWords;
+    function cmp($a, $b){
+            return $a->frequency >= $b->frequency;
+    }
+
     function parseWord($paperText,$paperName ){
 
         //parse the string -> turn into array of words
 
         $wordFrequencyInPaper = array_count_values(str_word_count($paperText, 1)) ;
+        arsort( $wordFrequencyInPaper );
         $words = [];
         foreach($wordFrequencyInPaper as $nugget => $value){
             $word = new Word();
-            // if(allWords[nugget]){
-
-            //     add it
-            // } else {
-
-            // increment}
-
-           
-            $word->stringValue= $nugget;
+            $word->stringValue= strtolower($nugget);
             $word->frequency = $value;
             array_push($word->papers, $paperName);
             array_push($words, $word);
         }
+        usort($words, array($this, "cmp"));
         return $words;
     }
      /**
