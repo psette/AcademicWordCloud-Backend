@@ -3,7 +3,16 @@ include_once dirname(__FILE__) . '/../Model/Word.php';
 
 class WordParser {
 
-   // var allWords;
+    /**
+     * A Map of everyword in all of the papers and their frequency
+     *
+     * @var paperWordFrequency
+     */
+    var $allWords;
+
+    function __construct(){
+        $this->allWords = [];
+    }
     function parseWord($paperText,$paperName ){
 
         //parse the string -> turn into array of words
@@ -12,18 +21,18 @@ class WordParser {
         $words = [];
         foreach($wordFrequencyInPaper as $nugget => $value){
             $word = new Word();
-            // if(allWords[nugget]){
 
-            //     add it
-            // } else {
-
-            // increment}
-
-           
             $word->stringValue= $nugget;
             $word->frequency = $value;
             array_push($word->papers, $paperName);
             array_push($words, $word);
+
+             if(is_null($allWords[$nugget])){
+                array_push($allWords, $word);
+            }else{
+                $allWords[$nugget] = $allWords[$nugget]->frequency + $value;
+                array_push($allWords[$nugget]->papers, $paperName);
+            }
         }
         return $words;
     }

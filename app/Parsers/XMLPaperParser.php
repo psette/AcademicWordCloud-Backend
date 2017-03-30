@@ -17,7 +17,12 @@ class XMLPaperParser implements Parser
      * @var ModelSet
      */
     public $paper;
-    public $word;
+    public $allWords;
+    var $wordParser;
+
+    function __construct(){
+        $wordParser = new WordParser();
+    }
 
     /**
      * Parses the XML and returns a paper object.
@@ -31,7 +36,6 @@ class XMLPaperParser implements Parser
     {
         $paper = new \Paper();
         $PDFParser =  new \PDFParser();
-        $word = new WordParser();
 
         $paper->authors = explode('; ', $XML->authors);
 
@@ -58,7 +62,9 @@ class XMLPaperParser implements Parser
 
         $paper->fullWords = $PDFParser->getTextFromPDF($paper->pdf);
 
-        $paper->frequentWords = $word->parseWord ($paper->fullWords,$paper->title);
+        $paper->frequentWords = $wordParser->parseWord ($paper->fullWords, $paper->title);
+
+        $allWords = $wordParser->allWords;
         return $paper;
     }
 
