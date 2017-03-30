@@ -18,10 +18,10 @@ class XMLPaperParser implements Parser
      */
     public $paper;
     public $allWords;
-    var $wordParser;
+    public $wordParser;
 
     function __construct(){
-        $wordParser = new WordParser();
+        $wordParser = new \WordParser();
     }
 
     /**
