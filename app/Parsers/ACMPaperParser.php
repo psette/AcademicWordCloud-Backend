@@ -17,6 +17,17 @@ class ACMPaperParser implements Parser
 
         $paper->identifier = $json["objectId"];
 
+        foreach ($json["persons"] as $person)
+        {
+            $name = $person["displayName"];
+            array_push($paper->authors, $name);
+        }
+
+        foreach ($json["tags"] as $tag)
+        {
+            $keyword = $tag["tag"];
+            array_push($paper->keywords, $keyword);
+        }
 
         if (array_key_exists("abstract", $json))
         {

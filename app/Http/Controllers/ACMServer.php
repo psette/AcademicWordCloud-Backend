@@ -31,6 +31,7 @@ class ACMServer extends BaseController
 {
     public function searchPapers(Request $request, $searchTerm)
     {
+        $searchType = $request->input('type');
         $maximumPaperCount = (int)($request->input('count'));
         
         $artists = [];
@@ -82,7 +83,25 @@ class ACMServer extends BaseController
             $paper = $paperParser->parseObject($paperJSON);
             if (!is_null($paper))
             {
-                array_push($papers, $paper);
+                if (strcmp($searchType, "name") == 0)
+                {
+                    foreach ($paper->authors as $author)
+                    {
+                        $index = strlen($author) - strlen($searchTerm);
+
+                        // If $author ends with $searchTerm, it's a match.
+                        if (strripos($author, $searchTerm, 0) === $index)
+                        {
+                            array_push($papers, $paper);
+                            break;
+                        }
+                    }
+                }
+                else 
+                {
+                    // Assume that if it was returned from our search, it matches well enough.
+                    array_push($papers, $paper);
+                }
             }
         }
         
