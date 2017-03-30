@@ -6,7 +6,7 @@ class PDFParser
 {
     public static function getTextFromPDF($pdf)
     {
-        $cookies_file = dirname(__FILE__). '/../tmp/ieee-pdf-access-cookies.txt';
+        $cookies_file = dirname(__FILE__). '/../../tmp/ieee-pdf-access-cookies.txt';
         $parser = new \Smalot\PdfParser\Parser();
 
         $curl = curl_init();
@@ -28,11 +28,9 @@ class PDFParser
 
         $result = curl_exec($curl);
         curl_close($curl);
+        $fp = fopen("wtf_TEMP2.pdf", "w");
+        fwrite($fp, $result);
 
-        $tmpfile = tempnam(sys_get_temp_dir(), "temp_PDF");
-
-        $handle = fopen($tmpfile, "w");
-        fwrite($handle, $result);
         try {
 
                 $pdf = $parser->parseFile("wtf_TEMP2.pdf");
@@ -43,8 +41,6 @@ class PDFParser
 
         }
 
-        fclose($handle);
-        unlink($tmpfile);
 
         $text = $pdf->getText();
         return $text;
@@ -58,7 +54,7 @@ class PDFParser
     */
     public static function getPDFLinkFromIEEE($link)
     {
-        $cookies_file = dirname(__FILE__). '/../tmp/ieee-main-access-cookies.txt';
+        $cookies_file = dirname(__FILE__). '/../../tmp/ieee-main-access-cookies.txt';
         $curl = curl_init();
         $headers[] = "Accept: */*";
         $headers[] = "Connection: Keep-Alive";

@@ -1,6 +1,7 @@
 <?php
 
 include_once dirname(__FILE__) . '/../app/Http/Controllers/Server.php';
+include_once dirname(__FILE__) . '/../app/Http/Controllers/ACMServer.php';
 include_once dirname(__FILE__) . '/../app/Parsers/LyricParser.php';
 
 /*
@@ -20,5 +21,6 @@ include_once dirname(__FILE__) . '/../app/Parsers/LyricParser.php';
  */
 
 $app->get('/search/{author}', 'Server@searchAuthors');
+$app->get('/searchacm/{author}', 'ACMServer@searchPapers');
 
 ?>
