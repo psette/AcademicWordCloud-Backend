@@ -1,7 +1,7 @@
 <?php
 
 /**
- * A paper composed by an Author.
+ * A paper writtten by an Author.
  */
 class Paper
 {
