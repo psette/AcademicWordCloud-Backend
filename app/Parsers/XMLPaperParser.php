@@ -30,6 +30,7 @@ class XMLPaperParser implements Parser{
         $paper = new \Paper();
         $PDFParser =  new \PDFParser();
         $word = new WordParser();
+        echo "Parsing  $XML->totalfound papers.\n";
 
         $paper->authors = explode('; ', $XML->authors);
 
@@ -53,7 +54,14 @@ class XMLPaperParser implements Parser{
         echo($paper->pdf);
         $paper->pdf = $PDFParser->getPDFLinkFromIEEE($XML->pdf->__toString());
 
-        $paper->fullWords = $PDFParser->getTextFromPDF($paper->pdf);
+        $text = $PDFParser->getTextFromPDF($paper->pdf);
+
+        if($text == "PDF not parsed"){
+                echo "PDF not parsed: " . $paper->title . "\n";
+                $paper->fullWords = $paper->abstract;
+        } else {
+                $paper->fullWords = $text;
+        }
 
         $paper->frequentWords = $word->parseWord ($paper->fullWords,$paper->title);
         return $paper;

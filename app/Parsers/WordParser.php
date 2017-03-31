@@ -9,12 +9,14 @@ class WordParser {
 
     function parseWord($paperText,$paperName ){
 
+        $paperText = preg_replace("/[^A-Za-z0-9 ]/", ' ', strtolower($paperText) );
+
         $wordFrequencyInPaper = array_count_values(str_word_count($paperText, 1)) ;
         arsort( $wordFrequencyInPaper );
         $words = [];
         foreach($wordFrequencyInPaper as $nugget => $value){
             $word = new Word();
-            $word->stringValue= strtolower($nugget);
+            $word->stringValue= $nugget;
             $word->frequency = $value;
             array_push($word->papers, $paperName);
             array_push($words, $word);

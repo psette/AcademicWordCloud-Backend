@@ -66,8 +66,17 @@ class Server extends Controller
         $XMLPaperParser = new XMLPaperParser();
 
         $papers = array();
+        ob_end_flush();
 
+        echo "Parsing $file->totalfound files. \n";
+
+        ob_start();
+        $progress = 0;
         foreach ($file->document as $document) {
+            ob_end_flush();
+            echo "Parsing file: $progress. \n";
+            ob_start();
+            $progress++;
             $paper = $XMLPaperParser->parseObject($document);
             $papers[] = $paper;
         }
