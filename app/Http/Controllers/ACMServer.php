@@ -39,7 +39,7 @@ class ACMServer extends BaseController
     {
         $searchType = $request->input('type');
         $maximumPaperCount = (int)($request->input('count'));
-        
+
         $artists = [];
 
         // Get cURL resource
@@ -106,7 +106,7 @@ class ACMServer extends BaseController
                         }
                     }
                 }
-                else 
+                else
                 {
                     // Assume that if it was returned from our search, it matches well enough.
                     if ($this->parsePaperPDF($paper))
@@ -116,7 +116,7 @@ class ACMServer extends BaseController
                 }
             }
         }
-        
+
         $artist = new Artist();
         $artist->name = $searchTerm;
         $artist->identifier = $artist->name;
@@ -124,9 +124,9 @@ class ACMServer extends BaseController
 
         // Determine frequent words from the papers.
         $artist->frequentLyrics = Paper::frequentWordsFromPapers($papers);
-        
+
         array_push($artists, $artist);
-        
+
         // Encode Artist objects to JSON to send to client.
         $artistParser = new ArtistParser();
         $serialized = array_map([$artistParser, "serializeObject"], $artists);
@@ -184,20 +184,27 @@ class ACMServer extends BaseController
 
         curl_setopt($ch, CURLOPT_TIMEOUT, 100);
 
-        curl_setopt($ch, CURLOPT_FILE, $fp); 
+        curl_setopt($ch, CURLOPT_FILE, $fp);
         curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
 
         // get curl response
-        curl_exec($ch); 
+        curl_exec($ch);
 
         curl_close($ch);
         fclose($fp);
 
         $parser = new \Smalot\PdfParser\Parser();
-        $pdf    = $parser->parseFile($filepath);
+        try{
 
-        $paper->fullWords = $pdf->getText();
+            $pdf  = $parser->parseFile($filepath);
+            $text = $pdf->getText();
 
+        } catch( Execption $e){
+
+            $text = $paper->abstract;
+        }
+
+        $paper->fullWords = $text;
         $papers = new ModelSet();
         $papers->attach($paper);
 
