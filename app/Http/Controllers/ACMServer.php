@@ -57,7 +57,7 @@ class ACMServer extends BaseController
         // Set headers
         curl_setopt($ch, CURLOPT_HTTPHEADER, [
         "api_key: 98BE4EB46E5AA6A1016EA327E05B1429856851C10FB54C1602336525B2AC1090",
-        "auth_token: 4BAB6929D28933EEE05010AC5A0A141F",
+        "auth_token: 4C4CA9042D09277EE05010AC5A0A4AA7",
         ]
         );
 
@@ -160,7 +160,7 @@ class ACMServer extends BaseController
         // Set headers
         curl_setopt($ch, CURLOPT_HTTPHEADER, [
         "api_key: 98BE4EB46E5AA6A1016EA327E05B1429856851C10FB54C1602336525B2AC1090",
-        "auth_token: 4BAB6929D28933EEE05010AC5A0A141F",
+        "auth_token: 4C4CA9042D09277EE05010AC5A0A4AA7",
         ]
         );
 
