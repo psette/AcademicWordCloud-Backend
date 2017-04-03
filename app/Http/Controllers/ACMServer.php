@@ -194,12 +194,19 @@ class ACMServer extends BaseController
         fclose($fp);
 
         $parser = new \Smalot\PdfParser\Parser();
+        echo "Paper";
         try{
-            $pdf   = $parser->parseFile($filepath);
+            var_dump($paper);
+            $pdf  = $parser->parseFile($filepath);
             $text = $pdf->getText();
-        } catch(Exeception $e){
+
+        } catch(Exception $e){
+
             $text = $paper->abstract;
+            echo "PDF SUPPORTED";
+
         }
+        ob_flush();
         $paper->fullWords = $text;
         $papers = new ModelSet();
         $papers->attach($paper);
