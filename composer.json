@@ -14,7 +14,7 @@
         "behat/mink": "^1.7",
         "behat/mink-extension": "^2.2",
         "laracasts/behat-laravel-extension": "^1.0",
-        "smalot/pdfparser": "*"
+        "smalot/pdfparser": "^0.10.0"
     },
     "require-dev": {
         "fzaninotto/faker": "~1.4",

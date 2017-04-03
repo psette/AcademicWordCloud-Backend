@@ -1,65 +1,35 @@
 <?php
 
-include_once dirname(__FILE__) . '/../Model/ModelSet.php';
-
 /**
- * A word from one or more papers.
+ * Words from Paper
  */
 class Word
 {
     /**
-     * The string representation of the Word.
+     * Word in Paper.
      *
      * @var string
      */
     var $stringValue;
 
     /**
-     * The unique identifier representing the Word.
-     *
-     * @var string
-     */
-    var $identifier;
-
-    /**
-     * The frequency of the Word.
+     * The frequency of the word in the Paper.
      *
      * @var int
      */
     var $frequency;
 
     /**
-     * The Papers that contain the Word.
+     * All of the papers that the word appears in.
      *
-     * @var ModelSet
+     * @var papers
      */
     var $papers;
 
     /**
      * The Word constructor.
      */
-    function __construct() 
-    {
-        $this->frequency = 0;
-        $this->papers = new ModelSet();
-    }
-
-    /**
-     * Comparator function to sort Words by frequency.
-     *
-     * @param Word $a
-     * @param Word $b
-     *
-     * @return int.
-     *
-     */
-    static function compareByFrequency($a, $b)
-    {
-        if ($a->frequency == $b->frequency) 
-        {
-            return 0;
-        }
-
-        return ($a->frequency < $b->frequency) ? 1 : -1;
+    function __construct(){
+        $this->papers = [];
     }
 }

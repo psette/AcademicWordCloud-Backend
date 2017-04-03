@@ -1,18 +1,22 @@
 <?php
 include_once dirname(__FILE__) . '/Parser.php';
+include_once dirname(__FILE__) . '/PDFParser.php';
+include_once dirname(__FILE__) . '/WordParser.php';
+
 include_once dirname(__FILE__) . '/../Model/Paper.php';
+include_once dirname(__FILE__) . '/../Model/Word.php';
 
 /**
  * Parser to parse paper objects.
  */
-class XMLPaperParser implements Parser
-{
+class XMLPaperParser implements Parser{
     /**
      * Papers that were written by the Authors to be parsed.
      *
      * @var ModelSet
      */
     public $paper;
+    public $word;
 
     /**
      * Parses the XML and returns a paper object.
@@ -22,31 +26,45 @@ class XMLPaperParser implements Parser
      * @return paper Returns an Author populated with data from $XML.
      */
 
-    public function parseObject($XML)
-    {
-        $paper = new Paper();
+    public function parseObject($XML){
+        $paper = new \Paper();
+        $PDFParser =  new \PDFParser();
+        $word = new WordParser();
+        echo "Parsing  $XML->totalfound papers.\n";
+
         $paper->authors = explode('; ', $XML->authors);
 
         $paper->title = $XML->title->__toString();
         $paper->identifier = $XML->title->__toString();
+
         if (is_array($XML->thesaurusterms->term) || is_object($XML->thesaurusterms->term)) {
 
             foreach ($XML->thesaurusterms->term as $term) {
 
                 array_push($paper->keywords, $term->__toString());
             }
-
         }
 
         $paper->abstract = $XML->abstract->__toString();
         $paper->conference = $XML->pubtitle->__toString();
         $paper->download = $XML->mdurl->__toString();
+
         $paper->bibtex = $this->parseBibtextLinkFromDownload($XML->arnumber->__toString());
-        //set as null until we can extract text
-        $paper->fullWords = null;
 
+        echo($paper->pdf);
+        $paper->pdf = $PDFParser->getPDFLinkFromIEEE($XML->pdf->__toString());
+
+        $text = $PDFParser->getTextFromPDF($paper->pdf);
+
+        if($text == "PDF not parsed"){
+                echo "PDF not parsed: " . $paper->title . "\n";
+                $paper->fullWords = $paper->abstract;
+        } else {
+                $paper->fullWords = $text;
+        }
+
+        $paper->frequentWords = $word->parseWord ($paper->fullWords,$paper->title);
         return $paper;
-
     }
 
     /**
@@ -56,8 +74,7 @@ class XMLPaperParser implements Parser
      *
      * @return string Returns the string representation of bibtex link.
      */
-    function parseBibtextLinkFromDownload($arnumber)
-    {
+    function parseBibtextLinkFromDownload($arnumber){
 
         $link = "http://ieeexplore.ieee.org/document/" . $arnumber . "/citations";
 
@@ -71,8 +88,7 @@ class XMLPaperParser implements Parser
      *
      * @return array Returns the JSON representation of the Paper.
      */
-    function serializeObject($Paper)
-    {
+    function serializeObject($Paper){
 
         // define a look-up table of relevant Paper info
         $json = [
@@ -87,7 +103,7 @@ class XMLPaperParser implements Parser
              "abstract" => $Paper->abstract,
              "conference" => $Paper->conference
         ];
-        return $json;
+        return json_encode($json);
     }
 }
 ?>

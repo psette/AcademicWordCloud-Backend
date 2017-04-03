@@ -125,6 +125,7 @@ class ACMServer extends BaseController
         // Determine frequent words from the papers.
         $artist->frequentLyrics = Paper::frequentWordsFromPapers($papers);
 
+
         array_push($artists, $artist);
 
         // Encode Artist objects to JSON to send to client.
@@ -142,6 +143,7 @@ class ACMServer extends BaseController
                   ->header('Content-Type', 'application/json')
                   ->header('Access-Control-Allow-Origin', '*');
     }
+
 
     public function parsePaperPDF($paper)
     {
@@ -220,5 +222,6 @@ class ACMServer extends BaseController
 
         return true;
     }
+
 }
 ?>
