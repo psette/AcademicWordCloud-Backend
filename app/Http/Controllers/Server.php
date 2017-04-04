@@ -2,27 +2,12 @@
 
 namespace App\Http\Controllers;
 
-include_once dirname(__FILE__) . '/../../Model/Track.php';
-include_once dirname(__FILE__) . '/../../Model/Artist.php';
-include_once dirname(__FILE__) . '/../../Model/Lyric.php';
-
 include_once dirname(__FILE__) . '/../../Parsers/XMLPaperParser.php';
-include_once dirname(__FILE__) . '/../../Parsers/TrackParser.php';
-include_once dirname(__FILE__) . '/../../Parsers/ArtistParser.php';
-include_once dirname(__FILE__) . '/../../Parsers/LyricParser.php';
 
 include_once dirname(__FILE__) . '/Controller.php';
 
 use Illuminate\Http\Request;
-
-use \Artist as Artist;
-use \Track as Track;
-use \Lyric as Lyric;
-
 use \XMLPaperParser as XMLPaperParser;
-use \authorParser as ArtistParser;
-use \TrackParser as TrackParser;
-use \LyricParser as LyricParser;
 
 /**
  * The class handling the Server logic.
@@ -45,23 +30,23 @@ class Server extends Controller
 
         $file = @simplexml_load_file($location);
 
-       if ($file == FALSE){
+        if ($file == false) {
 
             return "FILE IS NOT FOUND";
         }
 
         return $file;
     }
-     // @codeCoverageIgnoreEnd
+    // @codeCoverageIgnoreEnd
 
-
-       /*
+    /*
      *  Parse gieven XMLpaper into paper object array
      *
      * @param XML file $file found in search
      * @return array of paper objects
      */
-    public function parseXMLObject($file){
+    public function parseXMLObject($file)
+    {
 
         $XMLPaperParser = new XMLPaperParser();
 
@@ -101,12 +86,11 @@ class Server extends Controller
         $IEEE = true;
         $XMLPaperParser = new XMLPaperParser();
 
-        if($IEEE){
+        if ($IEEE) {
             $file = $this->get_IEEE_file($author);
         }
 
         $papers = $this->parseXMLObject($file);
-
 
         // Encode paper objects to JSON to send to client.
         $serialized = array_map([$XMLPaperParser, "serializeObject"], $papers);
@@ -114,9 +98,7 @@ class Server extends Controller
 
         // Allow cross-origin-requests so javascript can make requests.
         return response($encoded, 200)
-                  ->header('Content-Type', 'application/json')
-                  ->header('Access-Control-Allow-Origin', '*');
+            ->header('Content-Type', 'application/json')
+            ->header('Access-Control-Allow-Origin', '*');
     }
 }
-
-?>
