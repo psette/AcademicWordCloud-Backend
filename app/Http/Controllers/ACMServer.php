@@ -9,11 +9,10 @@ include_once dirname(__FILE__) . '/../../Model/Lyric.php';
 include_once dirname(__FILE__) . '/../../Model/ModelSet.php';
 
 include_once dirname(__FILE__) . '/../../Parsers/ACMPaperParser.php';
-include_once dirname(__FILE__) . '/../../Parsers/PaperParser.php';
 include_once dirname(__FILE__) . '/../../Parsers/TrackParser.php';
 include_once dirname(__FILE__) . '/../../Parsers/ArtistParser.php';
 include_once dirname(__FILE__) . '/../../Parsers/LyricParser.php';
-include_once dirname(__FILE__) . '/../../Parsers/WordParser.php';
+include_once dirname(__FILE__) . '/../../Parsers/ACMWordParser.php';
 
 include_once dirname(__FILE__) . '/../../../vendor/autoload.php';
 
@@ -30,7 +29,6 @@ use \ArtistParser as ArtistParser;
 use \TrackParser as TrackParser;
 use \ACMPaperParser as ACMPaperParser;
 use \LyricParser as LyricParser;
-use \PaperParser as PaperParser;
 use \WordParser as WordParser;
 
 class ACMServer extends BaseController
@@ -75,7 +73,6 @@ class ACMServer extends BaseController
         $json = json_decode($responseText, true);
 
         $paperParser = new ACMPaperParser();
-        $paperSerializer = new PaperParser();
 
         $papers = [];
 
@@ -131,7 +128,7 @@ class ACMServer extends BaseController
         $artistParser = new ArtistParser();
         $serialized = array_map([$artistParser, "serializeObject"], $artists);
 
-        $serializedPapers = array_map([$paperSerializer, "serializeObject"], $papers);
+        $serializedPapers = array_map([$paperParser, "serializeObject"], $papers);
         $serialized[0]["tracks"] = $serializedPapers;
         $bytes = $this->utf8ize( $serialized);
         $encoded = json_encode($bytes);

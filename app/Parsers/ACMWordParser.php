@@ -1,7 +1,7 @@
 <?php
 
 include_once __DIR__  . '/Parser.php';
-include_once __DIR__  . '/../Model/Word.php';
+include_once __DIR__  . '/../Model/ACMWord.php';
 
 /**
  * Parser to parse Word objects.
@@ -27,7 +27,7 @@ class WordParser implements Parser
         // Split $words into words separated by non-letters (except ' and -).
         $string = preg_replace('/[^a-z0-9]+/i', ' ', $string);
         $terms = explode(" ", $string);
-        
+
         $words = [];
         foreach ($terms as $term)
         {
