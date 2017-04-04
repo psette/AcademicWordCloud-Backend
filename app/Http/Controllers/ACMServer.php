@@ -132,15 +132,45 @@ class ACMServer extends BaseController
         $serialized = array_map([$artistParser, "serializeObject"], $artists);
 
         $serializedPapers = array_map([$paperSerializer, "serializeObject"], $papers);
-
         $serialized[0]["tracks"] = $serializedPapers;
-
-        $encoded = json_encode($serialized);
-
-        // Allow cross-origin-requests so javascript can make requests.
+        $bytes = $this->utf8ize( $serialized);
+        $encoded = json_encode($bytes);
+    switch (json_last_error()) {
+        case JSON_ERROR_NONE:
+            echo ' - No errors';
+        break;
+        case JSON_ERROR_DEPTH:
+            echo ' - Maximum stack depth exceeded';
+        break;
+        case JSON_ERROR_STATE_MISMATCH:
+            echo ' - Underflow or the modes mismatch';
+        break;
+        case JSON_ERROR_CTRL_CHAR:
+            echo ' - Unexpected control character found';
+        break;
+        case JSON_ERROR_SYNTAX:
+            echo ' - Syntax error, malformed JSON';
+        break;
+        case JSON_ERROR_UTF8:
+            echo ' - Malformed UTF-8 characters, possibly incorrectly encoded';
+        break;
+        default:
+            echo ' - Unknown error';
+        break;
+    }        // Allow cross-origin-requests so javascript can make requests.
         return response($encoded, 200)
                   ->header('Content-Type', 'application/json')
                   ->header('Access-Control-Allow-Origin', '*');
+    }
+     function utf8ize($d) {
+        if (is_array($d)) {
+            foreach ($d as $k => $v) {
+                $d[$k] = $this->utf8ize($v);
+            }
+        } else if (is_string ($d)) {
+            return utf8_encode($d);
+        }
+        return $d;
     }
 
     public function parsePaperPDF($paper)
@@ -191,15 +221,16 @@ class ACMServer extends BaseController
         curl_exec($ch);
 
         curl_close($ch);
-        fclose($fp);
 
         $parser = new \Smalot\PdfParser\Parser();
-        try{
-            $pdf   = $parser->parseFile($filepath);
-            $text = $pdf->getText();
-        } catch(Exeception $e){
+        $pdf = $parser->parseFile($filepath);
+
+        if($pdf === "PDF >= 1.5" ){
             $text = $paper->abstract;
+        } else  {
+            $text = $pdf->getText();
         }
+
         $paper->fullWords = $text;
         $papers = new ModelSet();
         $papers->attach($paper);

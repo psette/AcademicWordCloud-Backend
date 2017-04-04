@@ -4,11 +4,11 @@ include_once dirname(__FILE__) . '/WordParser.php';
 include_once dirname(__FILE__) . '/../Model/Paper.php';
 
 class ACMPaperParser implements Parser
-{    
+{
     public function parseObject($json)
     {
         $paper = new Paper();
-
+        $paper->abstract = $json["abstract"];
         $paper->title = $json["title"];
         if (array_key_exists("subtitle", $json))
         {
@@ -28,7 +28,7 @@ class ACMPaperParser implements Parser
             $keyword = $tag["tag"];
             array_push($paper->keywords, $keyword);
         }
-        
+
         if (array_key_exists("attribs", $json))
         {
             $array = $json["attribs"];
@@ -41,7 +41,7 @@ class ACMPaperParser implements Parser
                     {
                         $paper->pdf = "http://api.acm.org/dl/v1/download?type=fulltext&url=" . urlencode($attributes["source"]);
                         break;
-                    } 
+                    }
                 }
             }
         }
