@@ -8,9 +8,6 @@ class ACMPaperParser implements Parser
     public function parseObject($json)
     {
         $paper = new Paper();
-        var_dump($json);
-        echo ("HIIIIII <br>");
-        ob_end_flush();
         $paper->abstract = $json["abstract"];
         $paper->title = $json["title"];
         if (array_key_exists("subtitle", $json)) {
@@ -18,6 +15,10 @@ class ACMPaperParser implements Parser
         }
 
         $paper->identifier = $json["objectId"];
+        $paper->bibtex = $this->parseBibtextLinkFromDownload($paper->identifier);
+
+        $paper->conferenceID = $json["parentId"];
+        $paper->conference = $json["parentTitle"];
 
         foreach ($json["persons"] as $person) {
             $name = $person["displayName"];
@@ -36,6 +37,7 @@ class ACMPaperParser implements Parser
                 if (strcmp($attributes["type"], "fulltext") == 0 && strcmp($attributes["format"], "pdf") == 0) {
                     if (array_key_exists("source", $attributes)) {
                         $paper->pdf = "http://api.acm.org/dl/v1/download?type=fulltext&url=" . urlencode($attributes["source"]);
+                        $paper->download = $paper->pdf;
                         break;
                     }
                 }
@@ -47,6 +49,21 @@ class ACMPaperParser implements Parser
         }
 
         return $paper;
+    }
+
+    /**
+     * Returns the link to the citation by extracting the article number.
+     *
+     * @param Arnumber $arnumber The download link of the paper.
+     *
+     * @return string Returns the string representation of bibtex link.
+     */
+    public function parseBibtextLinkFromDownload($id)
+    {
+
+        $link = "http://dl.acm.org/citation.cfm?id=" . $id . "&preflayout=flat";
+
+        return $link;
     }
 
     /**
@@ -70,6 +87,7 @@ class ACMPaperParser implements Parser
             "keywords" => $Paper->keywords,
             "abstract" => $Paper->abstract,
             "conference" => $Paper->conference,
+            "conferenceID" => $Paper->conferenceID,
         ];
         return json_encode($json);
     }

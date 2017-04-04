@@ -75,11 +75,17 @@ class Paper
      */
     var $abstract;
 
-      /**
+    /**
      * The conference of this paper.
      * @var conference
      */
     var $conference;
+
+    /**
+     * The conference ID of this paper.
+     * @var conference
+     */
+    var $conferenceID;
 
     /**
      * The paper constructor.
