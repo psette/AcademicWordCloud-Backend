@@ -135,29 +135,30 @@ class ACMServer extends BaseController
         $serialized[0]["tracks"] = $serializedPapers;
         $bytes = $this->utf8ize( $serialized);
         $encoded = json_encode($bytes);
-    switch (json_last_error()) {
-        case JSON_ERROR_NONE:
-            echo ' - No errors';
-        break;
-        case JSON_ERROR_DEPTH:
-            echo ' - Maximum stack depth exceeded';
-        break;
-        case JSON_ERROR_STATE_MISMATCH:
-            echo ' - Underflow or the modes mismatch';
-        break;
-        case JSON_ERROR_CTRL_CHAR:
-            echo ' - Unexpected control character found';
-        break;
-        case JSON_ERROR_SYNTAX:
-            echo ' - Syntax error, malformed JSON';
-        break;
-        case JSON_ERROR_UTF8:
-            echo ' - Malformed UTF-8 characters, possibly incorrectly encoded';
-        break;
-        default:
-            echo ' - Unknown error';
-        break;
-    }        // Allow cross-origin-requests so javascript can make requests.
+        switch (json_last_error()) {
+            case JSON_ERROR_NONE:
+                echo ' - No errors';
+            break;
+            case JSON_ERROR_DEPTH:
+                echo ' - Maximum stack depth exceeded';
+            break;
+            case JSON_ERROR_STATE_MISMATCH:
+                echo ' - Underflow or the modes mismatch';
+            break;
+            case JSON_ERROR_CTRL_CHAR:
+                echo ' - Unexpected control character found';
+            break;
+            case JSON_ERROR_SYNTAX:
+                echo ' - Syntax error, malformed JSON';
+            break;
+            case JSON_ERROR_UTF8:
+                echo ' - Malformed UTF-8 characters, possibly incorrectly encoded';
+            break;
+            default:
+                echo ' - Unknown error';
+            break;
+        }        // Allow cross-origin-requests so javascript can make requests.
+
         return response($encoded, 200)
                   ->header('Content-Type', 'application/json')
                   ->header('Access-Control-Allow-Origin', '*');
