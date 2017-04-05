@@ -8,17 +8,34 @@ class ACMPaperParser implements Parser
     public function parseObject($json)
     {
         $paper = new Paper();
-        $paper->abstract = $json["abstract"];
-        $paper->title = $json["title"];
+        if (array_key_exists("abstract", $json)) {
+            $paper->abstract = $json["abstract"];
+        }else{
+            $paper->abstract = 'abstract not parsed';
+        }
+       
         if (array_key_exists("subtitle", $json)) {
             $paper->title .= ": " . $json["subtitle"];
+        }else if(array_key_exists("title", $json)){
+            $paper->title = $json["title"];
+        }else{
+            $paper->title = 'title could not be parsed';            
         }
 
         $paper->identifier = $json["objectId"];
         $paper->bibtex = $this->parseBibtextLinkFromDownload($paper->identifier);
 
-        $paper->conferenceID = $json["parentId"];
+        if (array_key_exists("parentId", $json)) {
+            $paper->conferenceID = $json["parentId"];
+        }else{
+            $paper->conferenceID = 'conferenceID not parsed';
+        }
+
+        if (array_key_exists("parentTitle", $json)) {
         $paper->conference = $json["parentTitle"];
+        }else{
+            $paper->conference = 'conference title not parsed';
+        }
 
         foreach ($json["persons"] as $person) {
             $name = $person["displayName"];
