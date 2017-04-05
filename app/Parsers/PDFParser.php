@@ -4,7 +4,7 @@ include_once dirname(__FILE__) . '/../../vendor/autoload.php';
 
 class PDFParser
 {
-    public static function getTextFromPDF($pdf)
+    public static function getTextFromPDF($pdf, $abstract)
     {
         $cookies_file = dirname(__FILE__). '/../../tmp/ieee-pdf-access-cookies.txt';
         $parser = new \Smalot\PdfParser\Parser();
@@ -41,8 +41,12 @@ class PDFParser
 
         }
 
+        if ($pdf === "PDF >= 1.5") {
+            $text = $abstract;
+        } else {
+            $text = $pdf->getText();
+        }
 
-        $text = $pdf->getText();
         return $text;
     }
     /**
