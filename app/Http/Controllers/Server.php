@@ -46,15 +46,17 @@ class Server extends Controller
      * @param XML file $file found in search
      * @return array of paper objects
      */
-    public function parseXMLObject($file)
+    public function parseXMLObject($file, $maximumPaperCount)
     {
 
         $XMLPaperParser = new XMLPaperParser();
-
         $papers = array();
         $progress = 0;
         foreach ($file->document as $document) {
             $progress++;
+            if($progress >= $maximumPaperCount){
+                return $papers;
+            }
             $paper = $XMLPaperParser->parseObject($document);
             $papers[] = $paper;
         }
@@ -77,28 +79,58 @@ class Server extends Controller
         $searchType = $request->input('type');
         $maximumPaperCount = (int) ($request->input('count'));
 
+        if($maximumPaperCount % 2 === 0){
+
+            $numACM = $maximumPaperCount  / 2;
+            $numIEEE = $maximumPaperCount  / 2;
+
+        } else {
+            $numACM =  1 + $maximumPaperCount  / 2;
+            $numIEEE = $maximumPaperCount  / 2;
+
+        }
+
         $XMLPaperParser = new XMLPaperParser();
 
         $file = $this->get_IEEE_file($author);
 
-        $papers = $this->parseXMLObject($file);
+        $papers = $this->parseXMLObject($file, $numIEEE);
 
-        $ACMpapers = ACMServer::searchPapers($author, $searchType, $maximumPaperCount);
-        if(is_null($papers) && is_null($ACMpapers)){
-            return false;
-        }else if(is_null($papers)){
-            $serialize =  $ACMpapers;
-            echo 'iee is null';
-        }else if(is_null($ACMpapers)){
-            $serialize = $papers;
-            echo 'acm is null';
-        }else {
-            array_push($papers, $ACMpapers);
-            $serialize = $papers;
-            echo ' neither are null';
+        if( count( $papers ) < $numIEEE){
+
+            $numACM = $maximumPaperCount  - count( $papers );
+
         }
 
-      // var_dump($serialize);
+        $ACMpapers = ACMServer::searchPapers($author, $searchType, $numACM);
+
+        if( count( $ACMpapers ) + count( $papers ) < $maximumPaperCount){
+
+            $mergeTarget = array_merge($this->parseXMLObject($file, $maximumPaperCount), $papers);
+            $papers = array_unique($mergeTarget);
+
+
+        }
+
+        if(is_null($papers) && is_null($ACMpapers)){
+
+            return false;
+
+        } else if(is_null($papers)){
+
+            $serialize =  $ACMpapers;
+
+        } else if(is_null($ACMpapers)){
+
+            $serialize = $papers;
+
+        } else {
+
+            array_merge($papers, $ACMpapers);
+
+            $serialize = $papers;
+        }
+
         // Encode paper objects to JSON to send to client.
         $serialized = array_map([$XMLPaperParser, "serializeObject"], $serialize);
         $bytes = $this->utf8ize($serialized);
@@ -142,6 +174,6 @@ class Server extends Controller
         }
         return $d;
     }
-    
+
     }
 

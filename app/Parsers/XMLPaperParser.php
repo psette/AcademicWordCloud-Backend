@@ -27,7 +27,6 @@ class XMLPaperParser implements Parser{
      */
 
     public function parseObject($XML){
-       var_dump($XML);
         $paper = new \Paper();
         $PDFParser =  new \PDFParser();
         $word = new WordParser();

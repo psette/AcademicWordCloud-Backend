@@ -89,7 +89,11 @@ class Parser
     {
         // Create structure using TCPDF Parser.
         ob_start();
-        @$parser = new \TCPDF_PARSER(ltrim($content));
+        try{
+            @$parser = new \TCPDF_PARSER(ltrim($content));
+        } catch(\Exception $e){
+            return false;
+        }
         list($xref, $data) = $parser->getParsedData();
         unset($parser);
         ob_end_clean();
