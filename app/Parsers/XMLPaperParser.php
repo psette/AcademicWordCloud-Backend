@@ -54,7 +54,7 @@ class XMLPaperParser implements Parser{
         echo($paper->pdf);
         $paper->pdf = $PDFParser->getPDFLinkFromIEEE($XML->pdf->__toString());
 
-        $text = $PDFParser->getTextFromPDF($paper->pdf);
+        $text = $PDFParser->getTextFromPDF($paper->pdf, $paper->abstract);
 
         if($text == "PDF not parsed"){
                 echo "PDF not parsed: " . $paper->title . "\n";
