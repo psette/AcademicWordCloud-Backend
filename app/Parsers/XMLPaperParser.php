@@ -27,10 +27,10 @@ class XMLPaperParser implements Parser{
      */
 
     public function parseObject($XML){
+       var_dump($XML);
         $paper = new \Paper();
         $PDFParser =  new \PDFParser();
         $word = new WordParser();
-        echo "Parsing  $XML->totalfound papers.\n";
 
         $paper->authors = explode('; ', $XML->authors);
 
@@ -57,7 +57,6 @@ class XMLPaperParser implements Parser{
         $text = $PDFParser->getTextFromPDF($paper->pdf, $paper->abstract);
 
         if($text == "PDF not parsed"){
-                echo "PDF not parsed: " . $paper->title . "\n";
                 $paper->fullWords = $paper->abstract;
         } else {
                 $paper->fullWords = $text;

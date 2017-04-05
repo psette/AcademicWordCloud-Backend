@@ -31,15 +31,7 @@ class PDFParser
         $fp = fopen("wtf_TEMP2.pdf", "w");
         fwrite($fp, $result);
 
-        try {
-
-                $pdf = $parser->parseFile("wtf_TEMP2.pdf");
-
-        } catch (Exception $e) {
-
-            return "PDF not parsed";
-
-        }
+        $pdf = $parser->parseFile("wtf_TEMP2.pdf");
 
         if ($pdf === "PDF >= 1.5") {
             $text = $abstract;

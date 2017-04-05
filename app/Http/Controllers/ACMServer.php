@@ -55,26 +55,27 @@ class ACMServer extends BaseController
             }
 
             $paper = $paperParser->parseObject($paperJSON);
-            if (!is_null($paper)) {
-                if (strcmp($searchType, "name") == 0) {
-                    foreach ($paper->authors as $author) {
-                        $index = strlen($author) - strlen($searchTerm);
+            array_push($papers, $paper);
+            // if (!is_null($paper)) {
+            //     if (strcmp($searchType, "name") == 0) {
+            //         foreach ($paper->authors as $author) {
+            //             $index = strlen($author) - strlen($searchTerm);
 
-                        // If $author ends with $searchTerm, it's a match.
-                        if (strripos($author, $searchTerm, 0) === $index) {
-                            if ($this->parsePaperPDF($paper)) {
-                                array_push($papers, $paper);
-                            }
-                            break;
-                        }
-                    }
-                } else {
-                    // Assume that if it was returned from our search, it matches well enough.
-                    if ($this->parsePaperPDF($paper)) {
-                        array_push($papers, $paper);
-                    }
-                }
-            }
+            //             // If $author ends with $searchTerm, it's a match.
+            //             if (strripos($author, $searchTerm, 0) === $index) {
+            //                 if ($this->parsePaperPDF($paper)) {
+            //                     array_push($papers, $paper);
+            //                 }
+            //                 break;
+            //             }
+            //         }
+            //     } else {
+            //         // Assume that if it was returned from our search, it matches well enough.
+            //         if ($this->parsePaperPDF($paper)) {
+            //             array_push($papers, $paper);
+            //         }
+            //     }
+            // }
         }
 
         return $papers;

@@ -83,10 +83,24 @@ class Server extends Controller
 
         $papers = $this->parseXMLObject($file);
 
-        array_push($papers,ACMServer::searchPapers($author, $searchType, $maximumPaperCount));
-       
+        $ACMpapers = ACMServer::searchPapers($author, $searchType, $maximumPaperCount);
+        if(is_null($papers) && is_null($ACMpapers)){
+            return false;
+        }else if(is_null($papers)){
+            $serialize =  $ACMpapers;
+            echo 'iee is null';
+        }else if(is_null($ACMpapers)){
+            $serialize = $papers;
+            echo 'acm is null';
+        }else {
+            array_push($papers, $ACMpapers);
+            $serialize = $papers;
+            echo ' neither are null';
+        }
+
+      // var_dump($serialize);
         // Encode paper objects to JSON to send to client.
-        $serialized = array_map([$ACMpaperParser, "serializeObject"], $papers);
+        $serialized = array_map([$XMLPaperParser, "serializeObject"], $serialize);
         $bytes = $this->utf8ize($serialized);
         $encoded = json_encode($bytes);
 
