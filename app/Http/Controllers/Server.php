@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 include_once dirname(__FILE__) . '/../../Parsers/XMLPaperParser.php';
 
 include_once dirname(__FILE__) . '/Controller.php';
+include_once dirname(__FILE__) . '/ACMServer.php';
 
 use Illuminate\Http\Request;
 use \XMLPaperParser as XMLPaperParser;
@@ -73,24 +74,60 @@ class Server extends Controller
      */
     public function searchAuthors(Request $request, $author)
     {
-        // For IEEE testing keep true
+        $searchType = $request->input('type');
+        $maximumPaperCount = (int) ($request->input('count'));
 
-        $IEEE = true;
         $XMLPaperParser = new XMLPaperParser();
 
-        if ($IEEE) {
-            $file = $this->get_IEEE_file($author);
-        }
+        $file = $this->get_IEEE_file($author);
 
         $papers = $this->parseXMLObject($file);
 
+        array_push($papers,ACMServer::searchPapers($author, $searchType, $maximumPaperCount));
+       
         // Encode paper objects to JSON to send to client.
-        $serialized = array_map([$XMLPaperParser, "serializeObject"], $papers);
-        $encoded = json_encode($serialized);
+        $serialized = array_map([$ACMpaperParser, "serializeObject"], $papers);
+        $bytes = $this->utf8ize($serialized);
+        $encoded = json_encode($bytes);
 
-        // Allow cross-origin-requests so javascript can make requests.
+        switch (json_last_error()) {
+            case JSON_ERROR_NONE:
+                break;
+            case JSON_ERROR_DEPTH:
+                echo ' - Maximum stack depth exceeded';
+                break;
+            case JSON_ERROR_STATE_MISMATCH:
+                echo ' - Underflow or the modes mismatch';
+                break;
+            case JSON_ERROR_CTRL_CHAR:
+                echo ' - Unexpected control character found';
+                break;
+            case JSON_ERROR_SYNTAX:
+                echo ' - Syntax error, malformed JSON';
+                break;
+            case JSON_ERROR_UTF8:
+                echo ' - Malformed UTF-8 characters, possibly incorrectly encoded';
+                break;
+            default:
+                echo ' - Unknown error';
+                break;
+        } // Allow cross-origin-requests so javascript can make requests.
+
         return response($encoded, 200)
             ->header('Content-Type', 'application/json')
             ->header('Access-Control-Allow-Origin', '*');
     }
-}
+    public function utf8ize($d)
+    {
+        if (is_array($d)) {
+            foreach ($d as $k => $v) {
+                $d[$k] = $this->utf8ize($v);
+            }
+        } else if (is_string($d)) {
+            return utf8_encode($d);
+        }
+        return $d;
+    }
+    
+    }
+
