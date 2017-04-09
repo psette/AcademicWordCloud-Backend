@@ -91,22 +91,27 @@ class ACMPaperParser implements Parser
      *
      * @return array Returns the JSON representation of the Paper.
      */
-    public function serializeObject($Paper)
+    public function serializeObject($paper)
     {
+        $papers = new ModelSet();
+        $papers->attach($paper);
+
+        $wordParser = new WordParser();
+        $wordParser->papers = $papers;
+
         // define a look-up table of relevant Paper info
         $json = [
-            "title" => $Paper->title,
-            "bibtex" => $Paper->bibtex,
-            "download" => $Paper->download,
-            "pdf" => $Paper->pdf,
-            "fullWords" => $Paper->fullWords,
-            "frequentWords" => $Paper->frequentWords,
-            "authors" => $Paper->authors,
-            "keywords" => $Paper->keywords,
-            "abstract" => $Paper->abstract,
-            "conference" => $Paper->conference,
-            "conferenceID" => $Paper->conferenceID,
+            "title" => $paper->title,
+            "bibtex" => $paper->bibtex,
+            "download" => $paper->download,
+            "pdf" => $paper->pdf,
+            "fullWords" => $paper->fullWords,
+            "frequentWords" => array_map([$wordParser, "serializeObject"], $paper->frequentWords),
+            "authors" => $paper->authors,
+            "keywords" => $paper->keywords,
+            "abstract" => $paper->abstract,
         ];
-        return json_encode($json);
+
+        return $json;
     }
 }
