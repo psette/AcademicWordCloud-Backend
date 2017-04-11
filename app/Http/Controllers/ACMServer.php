@@ -50,11 +50,15 @@ class ACMServer extends BaseController
         $papers = [];
 
         foreach ($json as $paperJSON) {
+            if (count($papers) == $maximumPaperCount)
+            {
+                break;
+            }
+
             $paper = $paperParser->parseObject($paperJSON);
             array_push($papers, $paper);
         }
 
-        $papers = array_rand($papers, $maximumPaperCount);
         return $papers;
     }        
 
