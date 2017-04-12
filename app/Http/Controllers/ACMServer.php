@@ -33,8 +33,7 @@ class ACMServer extends BaseController
 
         // Set headers
         curl_setopt($ch, CURLOPT_HTTPHEADER, [
-            "api_key: 98BE4EB46E5AA6A1016EA327E05B1429856851C10FB54C1602336525B2AC1090",
-            "auth_token: 4BAB6929D28933EEE05010AC5A0A141F",
+            "api_key: 98BE4EB46E5AA6A1016EA327E05B1429856851C10FB54C1602336525B2AC1090"
         ]
         );
 
@@ -55,33 +54,32 @@ class ACMServer extends BaseController
             }
 
             $paper = $paperParser->parseObject($paperJSON);
-            array_push($papers, $paper);
-            // if (!is_null($paper)) {
-            //     if (strcmp($searchType, "name") == 0) {
-            //         foreach ($paper->authors as $author) {
-            //             $index = strlen($author) - strlen($searchTerm);
+            if (!is_null($paper)) {
+                if (strcmp($searchType, "name") == 0) {
+                    foreach ($paper->authors as $author) {
+                        $index = strlen($author) - strlen($searchTerm);
 
-            //             // If $author ends with $searchTerm, it's a match.
-            //             if (strripos($author, $searchTerm, 0) === $index) {
-            //                 if ($this->parsePaperPDF($paper)) {
-            //                     array_push($papers, $paper);
-            //                 }
-            //                 break;
-            //             }
-            //         }
-            //     } else {
-            //         // Assume that if it was returned from our search, it matches well enough.
-            //         if ($this->parsePaperPDF($paper)) {
-            //             array_push($papers, $paper);
-            //         }
-            //     }
-            // }
+                        // If $author ends with $searchTerm, it's a match.
+                        if (strripos($author, $searchTerm, 0) === $index) {
+                            if (ACMServer::parsePaperPDF($paper)) {
+                                array_push($papers, $paper);
+                            }
+                            break;
+                        }
+                    }
+                } else {
+                    // Assume that if it was returned from our search, it matches well enough.
+                    if (ACMServer::parsePaperPDF($paper)) {
+                        array_push($papers, $paper);
+                    }
+                }
+            }
         }
 
         return $papers;
     }        
 
-    public function parsePaperPDF($paper)
+    public static function parsePaperPDF($paper)
     {
         // Get cURL resource
         $ch = curl_init();
@@ -145,7 +143,7 @@ class ACMServer extends BaseController
         $wordParser = new \WordParser();
         $wordParser->papers = $papers;
 
-        $paper->frequentWords = $wordParser->parseWord($paper->fullWords, $paper->title);
+        $paper->frequentWords = $wordParser->parseObject($paper->fullWords);
 
         unlink($filepath);
 

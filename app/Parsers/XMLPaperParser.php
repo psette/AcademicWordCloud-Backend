@@ -2,9 +2,12 @@
 include_once dirname(__FILE__) . '/Parser.php';
 include_once dirname(__FILE__) . '/PDFParser.php';
 include_once dirname(__FILE__) . '/WordParser.php';
+include_once dirname(__FILE__) . '/../Model/ModelSet.php';
 
 include_once dirname(__FILE__) . '/../Model/Paper.php';
 include_once dirname(__FILE__) . '/../Model/Word.php';
+
+use \ModelSet as ModelSet;
 
 /**
  * Parser to parse paper objects.
@@ -86,23 +89,29 @@ class XMLPaperParser implements Parser{
      *
      * @return array Returns the JSON representation of the Paper.
      */
-    function serializeObject($Paper){
+    function serializeObject($paper){
+
+        // define a look-up table of relevant Paper info
+        $papers = new ModelSet();
+        $papers->attach($paper);
+
+        $wordParser = new WordParser();
+        $wordParser->papers = $papers;
 
         // define a look-up table of relevant Paper info
         $json = [
-             "title" => $Paper->title,
-             "bibtex" => $Paper->bibtex,
-             "download" => $Paper->download,
-             "pdf" => $Paper->pdf,
-             "fullWords" => $Paper->fullWords,
-             "frequentWords" => $Paper->frequentWords,
-             "authors" => $Paper->authors,
-             "keywords" => $Paper->keywords,
-             "abstract" => $Paper->abstract,
-             "conference" => $Paper->conference,
-             "conferenceID" => $Paper->conferenceID,
+            "title" => $paper->title,
+            "bibtex" => $paper->bibtex,
+            "download" => $paper->download,
+            "pdf" => $paper->pdf,
+            "fullWords" => $paper->fullWords,
+            "frequentWords" => array_map([$wordParser, "serializeObject"], $paper->frequentWords),
+            "authors" => $paper->authors,
+            "keywords" => $paper->keywords,
+            "abstract" => $paper->abstract,
         ];
-        return json_encode($json);
+        
+        return $json;
     }
 }
 ?>
