@@ -8,61 +8,60 @@ class ACMPaperParser implements Parser
     public function parseObject($json)
     {
         $paper = new Paper();
-
-        $paper->title = $json["title"];
-        if (array_key_exists("subtitle", $json))
-        {
+        if (array_key_exists("abstract", $json)) {
+            $paper->abstract = $json["abstract"];
+        }else{
+            $paper->abstract = 'abstract not parsed';
+        }
+       
+        if (array_key_exists("subtitle", $json)) {
             $paper->title .= ": " . $json["subtitle"];
+        }else if(array_key_exists("title", $json)){
+            $paper->title = $json["title"];
+        }else{
+            $paper->title = 'title could not be parsed';            
         }
 
         $paper->identifier = $json["objectId"];
         $paper->bibtex = $this->parseBibtextLinkFromDownload($paper->identifier);
 
-        if (array_key_exists("abstract", $json)) 
-        {
-            $paper->abstract = $json["abstract"];
+        if (array_key_exists("parentId", $json)) {
+            $paper->conferenceID = $json["parentId"];
+        }else{
+            $paper->conferenceID = 'conferenceID not parsed';
         }
 
-        foreach ($json["persons"] as $person)
-        {
+        if (array_key_exists("parentTitle", $json)) {
+        $paper->conference = $json["parentTitle"];
+        }else{
+            $paper->conference = 'conference title not parsed';
+        }
+
+        foreach ($json["persons"] as $person) {
             $name = $person["displayName"];
             array_push($paper->authors, $name);
         }
 
-        foreach ($json["tags"] as $tag)
-        {
+        foreach ($json["tags"] as $tag) {
             $keyword = $tag["tag"];
             array_push($paper->keywords, $keyword);
         }
 
-        if (array_key_exists("attribs", $json))
-        {
+        if (array_key_exists("attribs", $json)) {
             $array = $json["attribs"];
 
-            foreach ($array as $attributes)
-            {
-                if (strcmp($attributes["type"], "fulltext") == 0 && strcmp($attributes["format"], "pdf") == 0)
-                {
-                    if (array_key_exists("source", $attributes))
-                    {
+            foreach ($array as $attributes) {
+                if (strcmp($attributes["type"], "fulltext") == 0 && strcmp($attributes["format"], "pdf") == 0) {
+                    if (array_key_exists("source", $attributes)) {
                         $paper->pdf = "http://api.acm.org/dl/v1/download?type=fulltext&url=" . urlencode($attributes["source"]);
                         $paper->download = $paper->pdf;
                         break;
-                    } 
+                    }
                 }
             }
         }
 
-        if (array_key_exists("parentId", $json)) {
-            $paper->conferenceID = $json["parentId"];
-        }
-
-        if (array_key_exists("parentTitle", $json)) {
-            $paper->conference = $json["parentTitle"];
-        }
-
-        if (is_null($paper->pdf) || is_null($paper->title) || is_null($paper->identifier) || is_null($paper->download) || is_null($paper->bibtex) || is_null($paper->abstract))
-        {
+        if (is_null($paper->pdf)) {
             return null;
         }
 
@@ -91,27 +90,22 @@ class ACMPaperParser implements Parser
      *
      * @return array Returns the JSON representation of the Paper.
      */
-    public function serializeObject($paper)
+    public function serializeObject($Paper)
     {
-        $papers = new ModelSet();
-        $papers->attach($paper);
-
-        $wordParser = new WordParser();
-        $wordParser->papers = $papers;
-
         // define a look-up table of relevant Paper info
         $json = [
-            "title" => $paper->title,
-            "bibtex" => $paper->bibtex,
-            "download" => $paper->download,
-            "pdf" => $paper->pdf,
-            "fullWords" => $paper->fullWords,
-            "frequentWords" => array_map([$wordParser, "serializeObject"], $paper->frequentWords),
-            "authors" => $paper->authors,
-            "keywords" => $paper->keywords,
-            "abstract" => $paper->abstract,
+            "title" => $Paper->title,
+            "bibtex" => $Paper->bibtex,
+            "download" => $Paper->download,
+            "pdf" => $Paper->pdf,
+            "fullWords" => $Paper->fullWords,
+            "frequentWords" => $Paper->frequentWords,
+            "authors" => $Paper->authors,
+            "keywords" => $Paper->keywords,
+            "abstract" => $Paper->abstract,
+            "conference" => $Paper->conference,
+            "conferenceID" => $Paper->conferenceID,
         ];
-
-        return $json;
+        return json_encode($json);
     }
 }
