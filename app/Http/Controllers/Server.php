@@ -133,7 +133,8 @@ class Server extends Controller
 
         // Encode paper objects to JSON to send to client.
         $serialized = array_map([$XMLPaperParser, "serializeObject"], $serialize);
-        $encoded = json_encode($serialized);
+        $bytes = $this->utf8ize($serialized);
+        $encoded = json_encode($bytes);
 
         switch (json_last_error()) {
             case JSON_ERROR_NONE:
@@ -162,6 +163,17 @@ class Server extends Controller
             ->header('Content-Type', 'application/json')
             ->header('Access-Control-Allow-Origin', '*');
     }
+    public function utf8ize($d)
+    {
+        if (is_array($d)) {
+            foreach ($d as $k => $v) {
+                $d[$k] = $this->utf8ize($v);
+            }
+        } else if (is_string($d)) {
+            return utf8_encode($d);
+        }
+        return $d;
+    }
 
-}
+    }
 
