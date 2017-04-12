@@ -100,6 +100,7 @@ class XMLPaperParser implements Parser{
         // define a look-up table of relevant Paper info
         $json = [
             "title" => $paper->title,
+            "identifier" => $paper->identifier,
             "bibtex" => $paper->bibtex,
             "download" => $paper->download,
             "pdf" => $paper->pdf,
