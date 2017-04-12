@@ -50,7 +50,6 @@ class XMLPaperParser implements Parser{
 
         $paper->bibtex = $this->parseBibtextLinkFromDownload($XML->arnumber->__toString());
 
-        echo($paper->pdf);
         $paper->pdf = $PDFParser->getPDFLinkFromIEEE($XML->pdf->__toString());
 
         $text = $PDFParser->getTextFromPDF($paper->pdf, $paper->abstract);
@@ -61,7 +60,7 @@ class XMLPaperParser implements Parser{
                 $paper->fullWords = $text;
         }
 
-        $paper->frequentWords = $word->parseWord ($paper->fullWords,$paper->title);
+        $paper->frequentWords = $word->parseObject ($paper->fullWords,$paper->title);
         return $paper;
     }
 
@@ -90,19 +89,18 @@ class XMLPaperParser implements Parser{
 
         // define a look-up table of relevant Paper info
         $json = [
-             "title" => $Paper->title,
-             "bibtex" => $Paper->bibtex,
-             "download" => $Paper->download,
-             "pdf" => $Paper->pdf,
-             "fullWords" => $Paper->fullWords,
-             "frequentWords" => $Paper->frequentWords,
-             "authors" => $Paper->authors,
-             "keywords" => $Paper->keywords,
-             "abstract" => $Paper->abstract,
-             "conference" => $Paper->conference,
-             "conferenceID" => $Paper->conferenceID,
+            "title" => $paper->title,
+            "identifier" => $paper->identifier,
+            "bibtex" => $paper->bibtex,
+            "download" => $paper->download,
+            "pdf" => $paper->pdf,
+            "fullWords" => $paper->fullWords,
+            "frequentWords" => array_map([$wordParser, "serializeObject"], $paper->frequentWords),
+            "authors" => $paper->authors,
+            "keywords" => $paper->keywords,
+            "abstract" => $paper->abstract,
         ];
-        return json_encode($json);
+        return $json;
     }
 }
 ?>

@@ -85,6 +85,7 @@ class Server extends Controller
             $numIEEE = $maximumPaperCount  / 2;
 
         } else {
+            
             $numACM =  1 + $maximumPaperCount  / 2;
             $numIEEE = $maximumPaperCount  / 2;
 
@@ -94,9 +95,9 @@ class Server extends Controller
 
         $file = $this->get_IEEE_file($author);
 
-        $papers = $this->parseXMLObject($file, $numIEEE);
+        $papers = $this->parseXMLObject($file, $maximumPaperCount);
 
-        if( count( $papers ) < $numIEEE){
+        if( count( $papers ) < $maximumPaperCount){
 
             $numACM = $maximumPaperCount  - count( $papers );
 
@@ -104,13 +105,6 @@ class Server extends Controller
 
         $ACMpapers = ACMServer::searchPapers($author, $searchType, $numACM);
 
-        if( count( $ACMpapers ) + count( $papers ) < $maximumPaperCount){
-
-            $mergeTarget = array_merge($this->parseXMLObject($file, $maximumPaperCount), $papers);
-            $papers = array_unique($mergeTarget);
-
-
-        }
 
         if(is_null($papers) && is_null($ACMpapers)){
 
@@ -130,6 +124,8 @@ class Server extends Controller
 
             $serialize = $papers;
         }
+        
+        $serialize = $papers;
 
         // Encode paper objects to JSON to send to client.
         $serialized = array_map([$XMLPaperParser, "serializeObject"], $serialize);
