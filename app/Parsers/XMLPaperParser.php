@@ -53,7 +53,6 @@ class XMLPaperParser implements Parser{
 
         $paper->bibtex = $this->parseBibtextLinkFromDownload($XML->arnumber->__toString());
 
-        echo($paper->pdf);
         $paper->pdf = $PDFParser->getPDFLinkFromIEEE($XML->pdf->__toString());
 
         $text = $PDFParser->getTextFromPDF($paper->pdf, $paper->abstract);
@@ -64,7 +63,7 @@ class XMLPaperParser implements Parser{
                 $paper->fullWords = $text;
         }
 
-        $paper->frequentWords = $word->parseWord ($paper->fullWords,$paper->title);
+        $paper->frequentWords = $word->parseObject ($paper->fullWords,$paper->title);
         return $paper;
     }
 
