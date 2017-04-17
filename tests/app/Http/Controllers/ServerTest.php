@@ -3,11 +3,28 @@
 class ServerTest extends TestCase
 {
     /*
-     * Test IEEE file retrieval
+     * Test IEEE file retrieval when the author CAN be fournd
      */
     public function testGetIEEEFile()
     {
-        $testAuthor = "Sette";
+        $testAuthor = "sette";
+        $searchType = "name";
+
+        $server = new App\Http\Controllers\Server();
+
+        // invoke the function
+       $response = $server->get_IEEE_file($searchType, $testAuthor);
+       $this->assertInstanceOf(SimpleXMLElement::class, $response);
+    }
+
+    /*
+     * Test IEEE file retrieval when the author CANNOT be fournd
+     */
+    public function testGetIEEEFileNotFound()
+    {
+        $testAuthor = "foooooooo";
+        $searchType = "name";
+        $notFoundResponse = "FILE IS NOT FOUND";
 
         // Create a stub for the Server class.
         $serverStub = $this->createMock(App\Http\Controllers\Server::class);
@@ -16,13 +33,11 @@ class ServerTest extends TestCase
                          ->setMethods(['get_IEEE_file'])
                          ->getMock();
 
-        // ensure that it gets the file contents from the given author
-        $serverStub->expects($this->once())
-                 ->method('get_IEEE_file')
-                 ->with($this->equalTo($testAuthor));
+        $server = new App\Http\Controllers\Server();
 
         // invoke the function
-       $serverStub->get_IEEE_file($testAuthor);
+       $response = $server->get_IEEE_file($searchType, $testAuthor);
+       $this->assertEquals($response, $notFoundResponse);
     }
 
     /*
@@ -30,6 +45,9 @@ class ServerTest extends TestCase
      */
     public function testParseXMLObject()
     {
+
+        $testFile = new Paper();
+        $papersToSearch = 2;
 
         $testAuthor = "foo+author";
         // Create a stub for the Server class.
@@ -42,7 +60,7 @@ class ServerTest extends TestCase
 
         $testArray = array();
         /// invoke the function
-        $response = $serverStub->parseXMLObject($testArray);
+        $response = $serverStub->parseXMLObject($testFile, $papersToSearch);
 
         $this->assertEquals($response, NULL);
     }
@@ -71,5 +89,20 @@ class ServerTest extends TestCase
        $decodedContent = json_decode($response);
        // assert that the response matches the calculated expected response from the given crafted input
        $this->assertTrue(is_string($testAuthor));
+    }
+
+    public function testGetProgress()
+    {
+        $_SESSION = array('maximumPaperCount' => 0);
+
+        $dummyRequest = new Illuminate\Http\Request();
+         // Create a stub for the Server class.
+        $serverStub = $this->createMock(App\Http\Controllers\Server::class);
+        $serverStub = $this->getMockBuilder(App\Http\Controllers\Server::class)
+                         ->setMethods(['getProgress'])
+                         ->getMock();
+
+        $response = $serverStub->getProgress($dummyRequest);
+        $this->assertEquals($response, 0);
     }
 }
