@@ -2,7 +2,6 @@
 
 include_once dirname(__FILE__) . '/../app/Http/Controllers/Server.php';
 include_once dirname(__FILE__) . '/../app/Http/Controllers/ACMServer.php';
-include_once dirname(__FILE__) . '/../app/Parsers/LyricParser.php';
 
 /*
 |--------------------------------------------------------------------------
