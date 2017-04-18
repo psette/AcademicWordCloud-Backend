@@ -99,6 +99,8 @@ class XMLPaperParser implements Parser{
             "authors" => $paper->authors,
             "keywords" => $paper->keywords,
             "abstract" => $paper->abstract,
+            "conference" => $paper->conference,
+            "conferenceID" => $paper->conferenceID,
         ];
         return $json;
     }
