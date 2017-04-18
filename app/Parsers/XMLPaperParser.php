@@ -2,12 +2,9 @@
 include_once dirname(__FILE__) . '/Parser.php';
 include_once dirname(__FILE__) . '/PDFParser.php';
 include_once dirname(__FILE__) . '/WordParser.php';
-include_once dirname(__FILE__) . '/../Model/ModelSet.php';
 
 include_once dirname(__FILE__) . '/../Model/Paper.php';
 include_once dirname(__FILE__) . '/../Model/Word.php';
-
-use \ModelSet as ModelSet;
 
 /**
  * Parser to parse paper objects.
@@ -88,14 +85,7 @@ class XMLPaperParser implements Parser{
      *
      * @return array Returns the JSON representation of the Paper.
      */
-    function serializeObject($paper){
-
-        // define a look-up table of relevant Paper info
-        $papers = new ModelSet();
-        $papers->attach($paper);
-
-        $wordParser = new WordParser();
-        $wordParser->papers = $papers;
+    function serializeObject($Paper){
 
         // define a look-up table of relevant Paper info
         $json = [
@@ -112,7 +102,6 @@ class XMLPaperParser implements Parser{
             "conference" => $paper->conference,
             "conferenceID" => $paper->conferenceID,
         ];
-        
         return $json;
     }
 }
