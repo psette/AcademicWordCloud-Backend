@@ -41,7 +41,7 @@ class Server extends Controller
                 // get the contents of the wikia search
                 $location = "https://ieeexplore.ieee.org/gateway/ipsSearch.jsp?jn=" . urlencode($param);
                 break;
-            
+
             default:
                 echo "Error in getting IEEE file";
                 break;
@@ -103,7 +103,7 @@ class Server extends Controller
             $numIEEE = $maximumPaperCount  / 2;
 
         } else {
-            
+
             $numACM =  1 + $maximumPaperCount  / 2;
             $numIEEE = $maximumPaperCount  / 2;
 
@@ -142,7 +142,7 @@ class Server extends Controller
 
             $serialize = $papers;
         }
-        
+
         $serialize = $papers;
 
         // Encode paper objects to JSON to send to client.
@@ -198,14 +198,107 @@ class Server extends Controller
 
         return $papers;
     }
+/*
+     * Search for authors matching provided text.
+     *
+     * @param Request $request
+     * @param string $author
+     *
+     * @return JSON-encoded authors array.
+     *
+     */
+    public function searchKeyword(Request $request, $word)
+    {
+        $searchType = $request->input('type');
+        $maximumPaperCount = (int) ($request->input('count'));
 
+        // if($maximumPaperCount % 2 === 0){
+
+        //     $numACM = $maximumPaperCount  / 2;
+        //     $numIEEE = $maximumPaperCount  / 2;
+
+        // } else {
+
+        //     $numACM =  1 + $maximumPaperCount  / 2;
+        //     $numIEEE = $maximumPaperCount  / 2;
+
+        // }
+
+        $XMLPaperParser = new XMLPaperParser();
+
+        $file = $this->get_IEEE_file("keyword", $word);
+
+        $papers = $this->parseXMLObject($file, $maximumPaperCount);
+
+        // if( count( $papers ) < $maximumPaperCount){
+
+        //     $numACM = $maximumPaperCount  - count( $papers );
+
+        // }
+
+        // $ACMpapers = ACMServer::searchPapers($author, $searchType, $numACM);
+
+
+        // if(is_null($papers) && is_null($ACMpapers)){
+
+        //     return false;
+
+        // } else if(is_null($papers)){
+
+        //     $serialize =  $ACMpapers;
+
+        // } else if(is_null($ACMpapers)){
+
+        //     $serialize = $papers;
+
+        // } else {
+
+        //     array_merge($papers, $ACMpapers);
+
+        //     $serialize = $papers;
+        // }
+
+        $serialize = $papers;
+
+        // Encode paper objects to JSON to send to client.
+        $serialized = array_map([$XMLPaperParser, "serializeObject"], $serialize);
+        $bytes = $this->utf8ize($serialized);
+        $encoded = json_encode($bytes);
+
+        switch (json_last_error()) {
+            case JSON_ERROR_NONE:
+                break;
+            case JSON_ERROR_DEPTH:
+                echo ' - Maximum stack depth exceeded';
+                break;
+            case JSON_ERROR_STATE_MISMATCH:
+                echo ' - Underflow or the modes mismatch';
+                break;
+            case JSON_ERROR_CTRL_CHAR:
+                echo ' - Unexpected control character found';
+                break;
+            case JSON_ERROR_SYNTAX:
+                echo ' - Syntax error, malformed JSON';
+                break;
+            case JSON_ERROR_UTF8:
+                echo ' - Malformed UTF-8 characters, possibly incorrectly encoded';
+                break;
+            default:
+                echo ' - Unknown error';
+                break;
+        } // Allow cross-origin-requests so javascript can make requests.
+
+        return response($encoded, 200)
+            ->header('Content-Type', 'application/json')
+            ->header('Access-Control-Allow-Origin', '*');
+    }
     public function searchConference(Request $request, $conference)
     {
-       
+
         $file = $this->get_IEEE_file("conference", $conference);
 
         $papers = $this->parseIEEEPaperTitles($file);
-        
+
         $serialize = $papers;
         $XMLPaperParser = new XMLPaperParser();
 
@@ -242,7 +335,7 @@ class Server extends Controller
             ->header('Access-Control-Allow-Origin', '*');
     }
 
-   
+
 }
 
 
