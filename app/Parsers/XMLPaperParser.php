@@ -115,5 +115,15 @@ class XMLPaperParser implements Parser{
         
         return $json;
     }
+
+    function serializeTitle($paper){
+
+        // define a look-up table of relevant Paper info
+        $json = [
+            "title" => $paper,
+        ];
+        
+        return $json;
+    }
 }
 ?>
