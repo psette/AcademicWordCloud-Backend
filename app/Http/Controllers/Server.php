@@ -24,10 +24,28 @@ class Server extends Controller
      * @return array of paper objects
      */
     // @codeCoverageIgnoreStart
-    public function get_IEEE_file($author)
+    public function get_IEEE_file($type, $param)
     {
-        // get the contents of the wikia search
-        $location = "https://ieeexplore.ieee.org/gateway/ipsSearch.jsp?au=" . urlencode($author);
+        switch ($type) {
+            case 'author':
+                // get the contents of the wikia search
+                $location = "https://ieeexplore.ieee.org/gateway/ipsSearch.jsp?au=" . urlencode($param);
+                break;
+
+            case 'keyword':
+                // get the contents of the wikia search
+                $location = "https://ieeexplore.ieee.org/gateway/ipsSearch.jsp?md=" . urlencode($param);
+                break;
+
+            case 'conference':
+                // get the contents of the wikia search
+                $location = "https://ieeexplore.ieee.org/gateway/ipsSearch.jsp?jn=" . urlencode($param);
+                break;
+            
+            default:
+                echo "Error in getting IEEE file";
+                break;
+        }
 
         $file = @simplexml_load_file($location);
 
@@ -93,7 +111,7 @@ class Server extends Controller
 
         $XMLPaperParser = new XMLPaperParser();
 
-        $file = $this->get_IEEE_file($author);
+        $file = $this->get_IEEE_file("author", $author);
 
         $papers = $this->parseXMLObject($file, $maximumPaperCount);
 
@@ -159,6 +177,7 @@ class Server extends Controller
             ->header('Content-Type', 'application/json')
             ->header('Access-Control-Allow-Origin', '*');
     }
+
     public function utf8ize($d)
     {
         if (is_array($d)) {
@@ -171,5 +190,59 @@ class Server extends Controller
         return $d;
     }
 
+    public function parseIEEEPaperTitles($file) {
+        $papers = array();
+        foreach ($file->document as $document) {
+            $papers[] = $document->title->__toString();;
+        }
+
+        return $papers;
     }
+
+    public function searchConference(Request $request, $conference)
+    {
+       
+        $file = $this->get_IEEE_file("conference", $conference);
+
+        $papers = $this->parseIEEEPaperTitles($file);
+        
+        $serialize = $papers;
+        $XMLPaperParser = new XMLPaperParser();
+
+        // Encode paper objects to JSON to send to client.
+        $serialized = array_map([$XMLPaperParser, "serializeTitle"], $serialize);
+        $bytes = $this->utf8ize($serialized);
+        $encoded = json_encode($bytes);
+
+        switch (json_last_error()) {
+            case JSON_ERROR_NONE:
+                break;
+            case JSON_ERROR_DEPTH:
+                echo ' - Maximum stack depth exceeded';
+                break;
+            case JSON_ERROR_STATE_MISMATCH:
+                echo ' - Underflow or the modes mismatch';
+                break;
+            case JSON_ERROR_CTRL_CHAR:
+                echo ' - Unexpected control character found';
+                break;
+            case JSON_ERROR_SYNTAX:
+                echo ' - Syntax error, malformed JSON';
+                break;
+            case JSON_ERROR_UTF8:
+                echo ' - Malformed UTF-8 characters, possibly incorrectly encoded';
+                break;
+            default:
+                echo ' - Unknown error';
+                break;
+        } // Allow cross-origin-requests so javascript can make requests.
+
+        return response($encoded, 200)
+            ->header('Content-Type', 'application/json')
+            ->header('Access-Control-Allow-Origin', '*');
+    }
+
+   
+}
+
 
