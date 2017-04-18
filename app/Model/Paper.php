@@ -114,39 +114,39 @@ class Paper
      */
     static function frequentWordsFromPapers($papers)
     {
-        // $words = [];
+        $words = [];
 
-        // if (is_null($papers))
-        // {
-        //     return $words;
-        // }
+        if (is_null($papers))
+        {
+            return $words;
+        }
 
-        // foreach ($papers as $paper)
-        // {
-        //     foreach ($paper->frequentwords as $frequentLyric)
-        //     {
-        //         $lyric = null;
+        foreach ($papers as $paper)
+        {
+            foreach ($paper->frequentwords as $frequentLyric)
+            {
+                $lyric = null;
 
-        //         if (array_key_exists($frequentLyric->stringValue, $words))
-        //         {
-        //             $lyric = $words[$frequentLyric->stringValue];
-        //         }
-        //         else
-        //         {
-        //             $lyric = new Lyric();
-        //             $lyric->stringValue = $frequentLyric->stringValue;
-        //             $lyric->identifier = $frequentLyric->stringValue;
-        //         }
+                if (array_key_exists($frequentLyric->stringValue, $words))
+                {
+                    $lyric = $words[$frequentLyric->stringValue];
+                }
+                else
+                {
+                    $lyric = new Lyric();
+                    $lyric->stringValue = $frequentLyric->stringValue;
+                    $lyric->identifier = $frequentLyric->stringValue;
+                }
 
-        //         $lyric->frequency = $lyric->frequency + $frequentLyric->frequency;
-        //         $lyric->papers->attach($paper);
+                $lyric->frequency = $lyric->frequency + $frequentLyric->frequency;
+                $lyric->papers->attach($paper);
 
-        //         $words[$frequentLyric->stringValue] = $lyric;
-        //     }
-        // }
+                $words[$frequentLyric->stringValue] = $lyric;
+            }
+        }
 
-        // usort($words, ["Lyric", "compareByFrequency"]);
+        usort($words, ["Lyric", "compareByFrequency"]);
 
-        // return $words;
+        return $words;
     }
 }
