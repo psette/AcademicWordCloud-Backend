@@ -16,16 +16,8 @@ use \XMLPaperParser as XMLPaperParser;
 class Server extends Controller
 {
 
-    var $numPapersLeft;
-    var $maximumPaperCount;
-
     public function getProgress(Request $request) {
-
-        if( $maximumPaperCount === 0 ){
-            return 1;
-        } else {
-           return $numPapersLeft / $maximumPaperCount;
-        }
+           return $_SESSION["numPapersLeft"] / $_SESSION["maximumPaperCount"];
     }
 
 
@@ -37,7 +29,6 @@ class Server extends Controller
      * @return array of paper objects
      */
     // @codeCoverageIgnoreStart
-
     public function get_IEEE_file($type, $param)
     {
         switch ($type) {
@@ -74,11 +65,10 @@ class Server extends Controller
 
     /*
      *  Parse gieven XMLpaper into paper object array
-     *
      * @param XML file $file found in search
      * @return array of paper objects
      */
-    public function parseXMLObject($file, $maximumPaperCount)
+    public function parseXMLObject($file, $papersToSearch)
     {
 
         $XMLPaperParser = new XMLPaperParser();
@@ -86,7 +76,9 @@ class Server extends Controller
         $progress = 0;
         foreach ($file->document as $document) {
             $progress++;
-            if($progress >= $maximumPaperCount){
+
+            $_SESSION["numPapersLeft"] = $_SESSION["numPapersLeft"] - 1;
+            if($progress >= $papersToSearch ){
                 return $papers;
             }
             $paper = $XMLPaperParser->parseObject($document);
@@ -100,21 +92,17 @@ class Server extends Controller
     public function search(Request $request, $term)
     {
 
+        session_start();
+
         $searchType = $request->input('type');
-        $maximumPaperCount = (int) ($request->input('count'));
+        $_SESSION["maximumPaperCount"] = (int) ($request->input('count'));
 
-        $numPapersLeft = $maximumPaperCount;
+        $_SESSION["numPapersLeft"] = $_SESSION["maximumPaperCount"];
 
-        if ($maximumPaperCount % 2 === 0)
-        {
-            $numACM = $maximumPaperCount  / 2;
-            $numIEEE = $maximumPaperCount  / 2;
-        }
-        else
-        {
-            $numACM =  1 + $maximumPaperCount  / 2;
-            $numIEEE = $maximumPaperCount  / 2;
-        }
+
+        $numACM = ceil( $_SESSION["maximumPaperCount"]  / 2 ) ;
+        $numIEEE = floor( $_SESSION["maximumPaperCount"]  / 2 );
+
 
         $XMLPaperParser = new XMLPaperParser();
 
@@ -128,13 +116,10 @@ class Server extends Controller
         else
         {
             $file = $this->get_IEEE_file($searchType, $term);
-            $papers = $this->parseXMLObject($file, $maximumPaperCount);
+            $papers = $this->parseXMLObject($file, $numIEEE);
         }
 
-        if (count($papers) < $maximumPaperCount)
-        {
-            $numACM = $maximumPaperCount - count($papers);
-        }
+        $numACM = $_SESSION["maximumPaperCount"]  - count($papers);
 
         $ACMpapers = ACMServer::searchPapers($term, $searchType, $numACM);
 
