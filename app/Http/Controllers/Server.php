@@ -16,6 +16,19 @@ use \XMLPaperParser as XMLPaperParser;
 class Server extends Controller
 {
 
+    var $numPapersLeft;
+    var $maximumPaperCount;
+
+    public function getProgress(Request $request) {
+
+        if( $maximumPaperCount === 0 ){
+            return 1;
+        } else {
+           return $numPapersLeft / $maximumPaperCount;
+        }
+    }
+
+
     /*
      * Search for authors matching provided name.
      *
@@ -24,6 +37,7 @@ class Server extends Controller
      * @return array of paper objects
      */
     // @codeCoverageIgnoreStart
+
     public function get_IEEE_file($type, $param)
     {
         switch ($type) {
@@ -82,17 +96,21 @@ class Server extends Controller
         return $papers;
 
     }
+
     public function search(Request $request, $term)
     {
+
         $searchType = $request->input('type');
         $maximumPaperCount = (int) ($request->input('count'));
+
+        $numPapersLeft = $maximumPaperCount;
 
         if ($maximumPaperCount % 2 === 0)
         {
             $numACM = $maximumPaperCount  / 2;
             $numIEEE = $maximumPaperCount  / 2;
-        } 
-        else 
+        }
+        else
         {
             $numACM =  1 + $maximumPaperCount  / 2;
             $numIEEE = $maximumPaperCount  / 2;
@@ -103,7 +121,7 @@ class Server extends Controller
         $file = $this->get_IEEE_file($searchType, $term);
         $papers = null;
 
-        if (strcmp($searchType, "conf") == 0) 
+        if (strcmp($searchType, "conf") == 0)
         {
             $papers = $this->parseIEEEPaperTitles($file);
         }
@@ -143,12 +161,12 @@ class Server extends Controller
 
         // Only need to serialize papers if not searching by conference.
         // Conference searches are just strings so no need to serialize that.
-        if (strcmp($searchType, "conf") != 0) 
+        if (strcmp($searchType, "conf") != 0)
         {
             // Encode paper objects to JSON to send to client.
             $serialized = array_map([$XMLPaperParser, "serializeObject"], $serialize);
         }
-        
+
         $bytes = $this->utf8ize($serialized);
         $encoded = json_encode($bytes);
 
