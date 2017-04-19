@@ -212,51 +212,11 @@ class Server extends Controller
         $searchType = $request->input('type');
         $maximumPaperCount = (int) ($request->input('count'));
 
-        // if($maximumPaperCount % 2 === 0){
-
-        //     $numACM = $maximumPaperCount  / 2;
-        //     $numIEEE = $maximumPaperCount  / 2;
-
-        // } else {
-
-        //     $numACM =  1 + $maximumPaperCount  / 2;
-        //     $numIEEE = $maximumPaperCount  / 2;
-
-        // }
-
         $XMLPaperParser = new XMLPaperParser();
 
         $file = $this->get_IEEE_file("keyword", $word);
 
         $papers = $this->parseXMLObject($file, $maximumPaperCount);
-
-        // if( count( $papers ) < $maximumPaperCount){
-
-        //     $numACM = $maximumPaperCount  - count( $papers );
-
-        // }
-
-        // $ACMpapers = ACMServer::searchPapers($author, $searchType, $numACM);
-
-
-        // if(is_null($papers) && is_null($ACMpapers)){
-
-        //     return false;
-
-        // } else if(is_null($papers)){
-
-        //     $serialize =  $ACMpapers;
-
-        // } else if(is_null($ACMpapers)){
-
-        //     $serialize = $papers;
-
-        // } else {
-
-        //     array_merge($papers, $ACMpapers);
-
-        //     $serialize = $papers;
-        // }
 
         $serialize = $papers;
 
@@ -292,6 +252,7 @@ class Server extends Controller
             ->header('Content-Type', 'application/json')
             ->header('Access-Control-Allow-Origin', '*');
     }
+
     public function searchConference(Request $request, $conference)
     {
 
