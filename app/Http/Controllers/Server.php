@@ -15,23 +15,13 @@ use \XMLPaperParser as XMLPaperParser;
  */
 class Server extends Controller
 {
-/*
+
 public function getProgress(Request $request) {
         if ( $_SESSION["maximumPaperCount"] === 0 ) {
             return 1;
         } else {
            return $_SESSION["numPapersLeft"] / $_SESSION["maximumPaperCount"];
         }
-    }
-*/
-    public function getProgress(Request $request) {
-
-        if( $_SESSION["maximumPaperCount"] === 0 ){
-            return 1;
-        } else {
-           return $_SESSION["numPapersLeft"] / $_SESSION["maximumPaperCount"];
-        }
-
     }
 
 
@@ -92,8 +82,6 @@ public function getProgress(Request $request) {
             $progress++;
 
             $_SESSION["numPapersLeft"] = $_SESSION["numPapersLeft"] - 1;
-            echo "IEEE " . $_SESSION["numPapersLeft"];
-            ob_flush();
             if($progress >= $papersToSearch ){
                 return $papers;
             }
@@ -119,10 +107,6 @@ public function getProgress(Request $request) {
         $numACM = ceil( $_SESSION["maximumPaperCount"]  / 2 ) ;
         $numIEEE = floor( $_SESSION["maximumPaperCount"]  / 2 );
 
-
-        echo "NUMACM " . $numACM;
-        echo "numIEEE " . $numIEEE;
-        ob_flush();
 
         $XMLPaperParser = new XMLPaperParser();
 
