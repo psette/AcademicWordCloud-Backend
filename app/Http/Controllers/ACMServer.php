@@ -57,6 +57,9 @@ class ACMServer extends BaseController
             }
 
             $_SESSION["numPapersLeft"] = $_SESSION["numPapersLeft"] - 1;
+            echo "ACM" .  $_SESSION["numPapersLeft"];
+            ob_flush();
+
 
             $paper = $paperParser->parseObject($paperJSON);
             if (!is_null($paper)) {
