@@ -51,9 +51,15 @@ class ACMServer extends BaseController
         $papers = [];
 
         foreach ($json as $paperJSON) {
-            if (count($papers) == $maximumPaperCount) {
+
+             if ( $_SESSION["numPapersLeft"] === 0) {
                 break;
             }
+
+            $_SESSION["numPapersLeft"] = $_SESSION["numPapersLeft"] - 1;
+            echo "ACM" .  $_SESSION["numPapersLeft"];
+            ob_flush();
+
 
             $paper = $paperParser->parseObject($paperJSON);
             if (!is_null($paper)) {
@@ -70,14 +76,14 @@ class ACMServer extends BaseController
                         }
                     }
                 }
-                else if (strcmp($searchType, "conf") == 0) 
+                else if (strcmp($searchType, "conf") == 0)
                 {
                     if (strcmp($searchTerm, $paper->conference) == 0)
                     {
                         // Just pass along paper title.
                         array_push($papers, $paper->title);
-                    } 
-                } 
+                    }
+                }
                 else
                 {
                     // Assume that if it was returned from our search, it matches well enough.
@@ -89,7 +95,7 @@ class ACMServer extends BaseController
         }
 
         return $papers;
-    }        
+    }
 
     public static function parsePaperPDF($paper)
     {

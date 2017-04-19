@@ -15,6 +15,25 @@ use \XMLPaperParser as XMLPaperParser;
  */
 class Server extends Controller
 {
+/*
+public function getProgress(Request $request) {
+        if ( $_SESSION["maximumPaperCount"] === 0 ) {
+            return 1;
+        } else {
+           return $_SESSION["numPapersLeft"] / $_SESSION["maximumPaperCount"];
+        }
+    }
+*/
+    public function getProgress(Request $request) {
+
+        if( $_SESSION["maximumPaperCount"] === 0 ){
+            return 1;
+        } else {
+           return $_SESSION["numPapersLeft"] / $_SESSION["maximumPaperCount"];
+        }
+
+    }
+
 
     /*
      * Search for authors matching provided name.
@@ -60,11 +79,10 @@ class Server extends Controller
 
     /*
      *  Parse gieven XMLpaper into paper object array
-     *
      * @param XML file $file found in search
      * @return array of paper objects
      */
-    public function parseXMLObject($file, $maximumPaperCount)
+    public function parseXMLObject($file, $papersToSearch)
     {
 
         $XMLPaperParser = new XMLPaperParser();
@@ -72,7 +90,11 @@ class Server extends Controller
         $progress = 0;
         foreach ($file->document as $document) {
             $progress++;
-            if($progress >= $maximumPaperCount){
+
+            $_SESSION["numPapersLeft"] = $_SESSION["numPapersLeft"] - 1;
+            echo "IEEE " . $_SESSION["numPapersLeft"];
+            ob_flush();
+            if($progress >= $papersToSearch ){
                 return $papers;
             }
             $paper = $XMLPaperParser->parseObject($document);
@@ -82,41 +104,42 @@ class Server extends Controller
         return $papers;
 
     }
+
     public function search(Request $request, $term)
     {
-        $searchType = $request->input('type');
-        $maximumPaperCount = (int) ($request->input('count'));
 
-        if ($maximumPaperCount % 2 === 0)
-        {
-            $numACM = $maximumPaperCount  / 2;
-            $numIEEE = $maximumPaperCount  / 2;
-        } 
-        else 
-        {
-            $numACM =  1 + $maximumPaperCount  / 2;
-            $numIEEE = $maximumPaperCount  / 2;
-        }
+        session_start();
+
+        $searchType = $request->input('type');
+        $_SESSION["maximumPaperCount"] = (int) ($request->input('count'));
+
+        $_SESSION["numPapersLeft"] = $_SESSION["maximumPaperCount"];
+
+
+        $numACM = ceil( $_SESSION["maximumPaperCount"]  / 2 ) ;
+        $numIEEE = floor( $_SESSION["maximumPaperCount"]  / 2 );
+
+
+        echo "NUMACM " . $numACM;
+        echo "numIEEE " . $numIEEE;
+        ob_flush();
 
         $XMLPaperParser = new XMLPaperParser();
 
         $file = $this->get_IEEE_file($searchType, $term);
         $papers = null;
 
-        if (strcmp($searchType, "conf") == 0) 
+        if (strcmp($searchType, "conf") == 0)
         {
             $papers = $this->parseIEEEPaperTitles($file);
         }
         else
         {
             $file = $this->get_IEEE_file($searchType, $term);
-            $papers = $this->parseXMLObject($file, $maximumPaperCount);
+            $papers = $this->parseXMLObject($file, $numIEEE);
         }
 
-        if (count($papers) < $maximumPaperCount)
-        {
-            $numACM = $maximumPaperCount - count($papers);
-        }
+        $numACM = $_SESSION["maximumPaperCount"]  - count($papers);
 
         $ACMpapers = ACMServer::searchPapers($term, $searchType, $numACM);
 
@@ -143,12 +166,12 @@ class Server extends Controller
 
         // Only need to serialize papers if not searching by conference.
         // Conference searches are just strings so no need to serialize that.
-        if (strcmp($searchType, "conf") != 0) 
+        if (strcmp($searchType, "conf") != 0)
         {
             // Encode paper objects to JSON to send to client.
             $serialized = array_map([$XMLPaperParser, "serializeObject"], $serialize);
         }
-        
+
         $bytes = $this->utf8ize($serialized);
         $encoded = json_encode($bytes);
 
