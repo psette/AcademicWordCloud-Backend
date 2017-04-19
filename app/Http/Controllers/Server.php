@@ -82,6 +82,28 @@ class Server extends Controller
         return $papers;
 
     }
+    public function search(Request $request, $term){
+        $searchType = $request->input('type');
+        $maximumPaperCount = (int) ($request->input('count'));
+
+        switch ($searchType) {
+            case 'name':
+            $this->searchAuthors($maximumPaperCount, $term);
+                break;
+            case 'keyword':
+                $this->searchKeyword($maximumPaperCount, $term);
+                break;
+            case 'conf':
+                $this->searchConference($maximumPaperCount, $term);
+                break;
+
+            default:
+                echo "Search type not recognized";
+                break;
+        }
+
+    }
+
 
     /*
      * Search for authors matching provided text.
@@ -92,10 +114,8 @@ class Server extends Controller
      * @return JSON-encoded authors array.
      *
      */
-    public function searchAuthors(Request $request, $author)
+    public function searchAuthors($maximumPaperCount, $author)
     {
-        $searchType = $request->input('type');
-        $maximumPaperCount = (int) ($request->input('count'));
 
         if($maximumPaperCount % 2 === 0){
 
@@ -207,10 +227,8 @@ class Server extends Controller
      * @return JSON-encoded authors array.
      *
      */
-    public function searchKeyword(Request $request, $word)
+    public function searchKeyword($maximumPaperCount,  $word)
     {
-        $searchType = $request->input('type');
-        $maximumPaperCount = (int) ($request->input('count'));
 
         $XMLPaperParser = new XMLPaperParser();
 
@@ -253,17 +271,21 @@ class Server extends Controller
             ->header('Access-Control-Allow-Origin', '*');
     }
 
-    public function searchConference(Request $request, $conference)
+    public function searchConference($maximumPaperCount,  $conference)
     {
 
+        $serialize = ACMServer::searchPapers($conference, "conf", $maximumPaperCount  ) ;
+        $XMLPaperParser = new XMLPaperParser();
+
+/*
         $file = $this->get_IEEE_file("conference", $conference);
 
         $papers = $this->parseIEEEPaperTitles($file);
 
         $serialize = $papers;
-        $XMLPaperParser = new XMLPaperParser();
 
         // Encode paper objects to JSON to send to client.
+        */
         $serialized = array_map([$XMLPaperParser, "serializeTitle"], $serialize);
         $bytes = $this->utf8ize($serialized);
         $encoded = json_encode($bytes);

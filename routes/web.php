@@ -20,8 +20,6 @@ include_once dirname(__FILE__) . '/../app/Parsers/LyricParser.php';
  *
  */
 
-$app->get('/search/{author}', 'Server@searchAuthors');
-$app->get('/searchconf/{conference}', 'Server@searchConference');
-$app->get('/searchKeyword/{word}', 'Server@searchKeyword');
+$app->get('/search/{term}', 'Server@search');
 
 ?>
