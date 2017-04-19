@@ -18,9 +18,9 @@ class Server extends Controller
 
 public function getProgress(Request $request) {
         if ( $_SESSION["maximumPaperCount"] === 0 ) {
-            return 1;
+            return 0;
         } else {
-           return $_SESSION["numPapersLeft"] / $_SESSION["maximumPaperCount"];
+           return 1 - $_SESSION["numPapersLeft"] / $_SESSION["maximumPaperCount"];
         }
     }
 
