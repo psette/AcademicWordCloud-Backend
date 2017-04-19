@@ -19,6 +19,8 @@ class ACMServer extends BaseController
 {
     public static function searchPapers($searchTerm, $searchType, $maximumPaperCount)
     {
+        $searchTerm = urldecode($searchTerm);
+
         // Get cURL resource
         $ch = curl_init();
 
@@ -67,7 +69,17 @@ class ACMServer extends BaseController
                             break;
                         }
                     }
-                } else {
+                }
+                else if (strcmp($searchType, "conf") == 0) 
+                {
+                    if (strcmp($searchTerm, $paper->conference) == 0)
+                    {
+                        // Just pass along paper title.
+                        array_push($papers, $paper->title);
+                    } 
+                } 
+                else
+                {
                     // Assume that if it was returned from our search, it matches well enough.
                     if (ACMServer::parsePaperPDF($paper)) {
                         array_push($papers, $paper);

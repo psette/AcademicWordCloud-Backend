@@ -27,7 +27,7 @@ class Server extends Controller
     public function get_IEEE_file($type, $param)
     {
         switch ($type) {
-            case 'author':
+            case 'name':
                 // get the contents of the wikia search
                 $location = "https://ieeexplore.ieee.org/gateway/ipsSearch.jsp?au=" . urlencode($param);
                 break;
@@ -37,7 +37,7 @@ class Server extends Controller
                 $location = "https://ieeexplore.ieee.org/gateway/ipsSearch.jsp?md=" . urlencode($param);
                 break;
 
-            case 'conference':
+            case 'conf':
                 // get the contents of the wikia search
                 $location = "https://ieeexplore.ieee.org/gateway/ipsSearch.jsp?jn=" . urlencode($param);
                 break;
@@ -82,67 +82,43 @@ class Server extends Controller
         return $papers;
 
     }
-    public function search(Request $request, $term){
+    public function search(Request $request, $term)
+    {
         $searchType = $request->input('type');
         $maximumPaperCount = (int) ($request->input('count'));
 
-        switch ($searchType) {
-            case 'name':
-            $this->searchAuthors($maximumPaperCount, $term);
-                break;
-            case 'keyword':
-                $this->searchKeyword($maximumPaperCount, $term);
-                break;
-            case 'conf':
-                $this->searchConference($maximumPaperCount, $term);
-                break;
-
-            default:
-                echo "Search type not recognized";
-                break;
-        }
-
-    }
-
-
-    /*
-     * Search for authors matching provided text.
-     *
-     * @param Request $request
-     * @param string $author
-     *
-     * @return JSON-encoded authors array.
-     *
-     */
-    public function searchAuthors($maximumPaperCount, $author)
-    {
-
-        if($maximumPaperCount % 2 === 0){
-
+        if ($maximumPaperCount % 2 === 0)
+        {
             $numACM = $maximumPaperCount  / 2;
             $numIEEE = $maximumPaperCount  / 2;
-
-        } else {
-
+        } 
+        else 
+        {
             $numACM =  1 + $maximumPaperCount  / 2;
             $numIEEE = $maximumPaperCount  / 2;
-
         }
 
         $XMLPaperParser = new XMLPaperParser();
 
-        $file = $this->get_IEEE_file("author", $author);
+        $file = $this->get_IEEE_file($searchType, $term);
+        $papers = null;
 
-        $papers = $this->parseXMLObject($file, $maximumPaperCount);
-
-        if( count( $papers ) < $maximumPaperCount){
-
-            $numACM = $maximumPaperCount  - count( $papers );
-
+        if (strcmp($searchType, "conf") == 0) 
+        {
+            $papers = $this->parseIEEEPaperTitles($file);
+        }
+        else
+        {
+            $file = $this->get_IEEE_file($searchType, $term);
+            $papers = $this->parseXMLObject($file, $maximumPaperCount);
         }
 
-        $ACMpapers = ACMServer::searchPapers($author, $searchType, $numACM);
+        if (count($papers) < $maximumPaperCount)
+        {
+            $numACM = $maximumPaperCount - count($papers);
+        }
 
+        $ACMpapers = ACMServer::searchPapers($term, $searchType, $numACM);
 
         if(is_null($papers) && is_null($ACMpapers)){
 
@@ -163,10 +139,16 @@ class Server extends Controller
             $serialize = $papers;
         }
 
-        $serialize = $papers;
+        $serialized = $serialize;
 
-        // Encode paper objects to JSON to send to client.
-        $serialized = array_map([$XMLPaperParser, "serializeObject"], $serialize);
+        // Only need to serialize papers if not searching by conference.
+        // Conference searches are just strings so no need to serialize that.
+        if (strcmp($searchType, "conf") != 0) 
+        {
+            // Encode paper objects to JSON to send to client.
+            $serialized = array_map([$XMLPaperParser, "serializeObject"], $serialize);
+        }
+        
         $bytes = $this->utf8ize($serialized);
         $encoded = json_encode($bytes);
 
@@ -218,107 +200,6 @@ class Server extends Controller
 
         return $papers;
     }
-/*
-     * Search for authors matching provided text.
-     *
-     * @param Request $request
-     * @param string $author
-     *
-     * @return JSON-encoded authors array.
-     *
-     */
-    public function searchKeyword($maximumPaperCount,  $word)
-    {
-
-        $XMLPaperParser = new XMLPaperParser();
-
-        $file = $this->get_IEEE_file("keyword", $word);
-
-        $papers = $this->parseXMLObject($file, $maximumPaperCount);
-
-        $serialize = $papers;
-
-        // Encode paper objects to JSON to send to client.
-        $serialized = array_map([$XMLPaperParser, "serializeObject"], $serialize);
-        $bytes = $this->utf8ize($serialized);
-        $encoded = json_encode($bytes);
-
-        switch (json_last_error()) {
-            case JSON_ERROR_NONE:
-                break;
-            case JSON_ERROR_DEPTH:
-                echo ' - Maximum stack depth exceeded';
-                break;
-            case JSON_ERROR_STATE_MISMATCH:
-                echo ' - Underflow or the modes mismatch';
-                break;
-            case JSON_ERROR_CTRL_CHAR:
-                echo ' - Unexpected control character found';
-                break;
-            case JSON_ERROR_SYNTAX:
-                echo ' - Syntax error, malformed JSON';
-                break;
-            case JSON_ERROR_UTF8:
-                echo ' - Malformed UTF-8 characters, possibly incorrectly encoded';
-                break;
-            default:
-                echo ' - Unknown error';
-                break;
-        } // Allow cross-origin-requests so javascript can make requests.
-
-        return response($encoded, 200)
-            ->header('Content-Type', 'application/json')
-            ->header('Access-Control-Allow-Origin', '*');
-    }
-
-    public function searchConference($maximumPaperCount,  $conference)
-    {
-
-        $serialize = ACMServer::searchPapers($conference, "conf", $maximumPaperCount  ) ;
-        $XMLPaperParser = new XMLPaperParser();
-
-/*
-        $file = $this->get_IEEE_file("conference", $conference);
-
-        $papers = $this->parseIEEEPaperTitles($file);
-
-        $serialize = $papers;
-
-        // Encode paper objects to JSON to send to client.
-        */
-        $serialized = array_map([$XMLPaperParser, "serializeTitle"], $serialize);
-        $bytes = $this->utf8ize($serialized);
-        $encoded = json_encode($bytes);
-
-        switch (json_last_error()) {
-            case JSON_ERROR_NONE:
-                break;
-            case JSON_ERROR_DEPTH:
-                echo ' - Maximum stack depth exceeded';
-                break;
-            case JSON_ERROR_STATE_MISMATCH:
-                echo ' - Underflow or the modes mismatch';
-                break;
-            case JSON_ERROR_CTRL_CHAR:
-                echo ' - Unexpected control character found';
-                break;
-            case JSON_ERROR_SYNTAX:
-                echo ' - Syntax error, malformed JSON';
-                break;
-            case JSON_ERROR_UTF8:
-                echo ' - Malformed UTF-8 characters, possibly incorrectly encoded';
-                break;
-            default:
-                echo ' - Unknown error';
-                break;
-        } // Allow cross-origin-requests so javascript can make requests.
-
-        return response($encoded, 200)
-            ->header('Content-Type', 'application/json')
-            ->header('Access-Control-Allow-Origin', '*');
-    }
-
-
 }
 
 
