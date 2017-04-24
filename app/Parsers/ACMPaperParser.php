@@ -105,7 +105,7 @@ class ACMPaperParser implements Parser
             "bibtex" => $paper->bibtex,
             "download" => $paper->download,
             "pdf" => $paper->pdf,
-            "pubYear" =>$paper->pubYear,
+            "pubYear" => $paper->pubYear,
             "fullWords" => $paper->fullWords,
             "frequentWords" => array_map([$wordParser, "serializeObject"], $paper->frequentWords),
             "authors" => $paper->authors,
