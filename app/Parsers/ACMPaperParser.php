@@ -18,7 +18,7 @@ class ACMPaperParser implements Parser
         $paper->identifier = $json["objectId"];
         $paper->bibtex = $this->parseBibtextLinkFromDownload($paper->identifier);
 
-        if (array_key_exists("abstract", $json)) 
+        if (array_key_exists("abstract", $json))
         {
             $paper->abstract = $json["abstract"];
         }
@@ -48,7 +48,7 @@ class ACMPaperParser implements Parser
                         $paper->pdf = "http://api.acm.org/dl/v1/download?type=fulltext&url=" . urlencode($attributes["source"]);
                         $paper->download = $paper->pdf;
                         break;
-                    } 
+                    }
                 }
             }
         }
@@ -105,6 +105,7 @@ class ACMPaperParser implements Parser
             "bibtex" => $paper->bibtex,
             "download" => $paper->download,
             "pdf" => $paper->pdf,
+            "pubYear" =>$paper->pubYear,
             "fullWords" => $paper->fullWords,
             "frequentWords" => array_map([$wordParser, "serializeObject"], $paper->frequentWords),
             "authors" => $paper->authors,

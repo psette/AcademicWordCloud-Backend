@@ -87,6 +87,12 @@ class Paper
      */
     var $conferenceID;
 
+     /**
+     * The publication year of this paper.
+     * @var pubYear
+     */
+    var $pubYear;
+
     /**
      * The paper constructor.
      */
