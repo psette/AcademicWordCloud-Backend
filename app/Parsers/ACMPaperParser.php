@@ -16,7 +16,7 @@ class ACMPaperParser implements Parser
         }
 
         $paper->identifier = $json["objectId"];
-        $paper->bibtex = $this->parseBibtextLinkFromDownload($paper->identifier);
+        $paper->bibtex = $this->fetchBibtex($paper);
 
         if (array_key_exists("abstract", $json)) 
         {
@@ -70,18 +70,33 @@ class ACMPaperParser implements Parser
     }
 
     /**
-     * Returns the link to the citation by extracting the article number.
+     * Returns the raw Bibtex.
      *
      * @param Arnumber $arnumber The download link of the paper.
      *
      * @return string Returns the string representation of bibtex link.
      */
-    public function parseBibtextLinkFromDownload($id)
+    public function fetchBibtex($paper)
     {
+        $url = "http://dl.acm.org/exportformats.cfm?id=" . $paper->identifier . "&expformat=bibtex";
+        $ch = curl_init();
+        $timeout = 5;
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, $timeout);
+        $html = curl_exec($ch);
+        curl_close($ch);
 
-        $link = "http://dl.acm.org/citation.cfm?id=" . $id . "&preflayout=flat";
+        $dom = new DOMDocument();
 
-        return $link;
+        @$dom->loadHTML($html);
+
+        foreach($dom->getElementsByTagName('pre') as $bibtex) 
+        {
+            return $bibtex->textContent;
+        }
+
+        return null;
     }
 
     /**
