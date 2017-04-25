@@ -8,15 +8,15 @@ class XMLPaperParserTest extends TestCase
 	 *
 	 */
 	public function testParseBibtextLinkFromDownload()
-    {
-        $arnNumber = 10;
-        $expectedResponse = "http://ieeexplore.ieee.org/document/" . $arnNumber  . "/citations";
+            {
+                $arnNumber = 10;
+                $expectedResponse = "http://ieeexplore.ieee.org/document/" . $arnNumber  . "/citations";
 
-        $xmlPaperParser = new XMLPaperParser();
-        $response = $xmlPaperParser->parseBibtextLinkFromDownload($arnNumber);
+                $xmlPaperParser = new XMLPaperParser();
+                $response = $xmlPaperParser->parseBibtextLinkFromDownload($arnNumber);
 
-        $this->assertEquals($response, $expectedResponse);
-    }
+                $this->assertEquals($response, $expectedResponse);
+            }
 
     /*
 	 * Test that seralizeTitle returns the correct title serialized
@@ -24,19 +24,19 @@ class XMLPaperParserTest extends TestCase
 	 *
 	 */
 	public function testSerializeTitle()
-    {
-        $title = "foo-title";
-        $serializedTitle = array("title" => $title);
+            {
+                $title = "foo-title";
+                $serializedTitle = array("title" => $title);
 
-        $xmlPaperParser = new XMLPaperParser();
-        $response = $xmlPaperParser->serializeTitle($title);
+                $xmlPaperParser = new XMLPaperParser();
+                $response = $xmlPaperParser->serializeTitle($title);
 
-        $this->assertEquals($response, $serializedTitle);
-    }
+                $this->assertEquals($response, $serializedTitle);
+            }
 
     public function testSerializeObject()
     {
-    	$title = "foo-title";
+        $title = "foo-title";
         $serializedTitle = array("title" => $title);
 
         $testWord = new Word();
@@ -53,6 +53,7 @@ class XMLPaperParserTest extends TestCase
         $paper->bibtex = "expectedBibtex";
         $paper->download = "expectedDownload";
         $paper->pdf = "expectedPdf";
+        $paper->pubYear = 2012;
         $paper->fullWords = "expectedFullWords";
         $paper->frequentWords = $frequentWordsArray;
         $paper->authors = "expectedAuthors";
@@ -72,6 +73,7 @@ class XMLPaperParserTest extends TestCase
             "bibtex" => $paper->bibtex,
             "download" => $paper->download,
             "pdf" => $paper->pdf,
+            "pubYear" => $paper->pubYear,
             "fullWords" => $paper->fullWords,
             "frequentWords" => $expectedFrequentWords,
             "authors" => $paper->authors,
