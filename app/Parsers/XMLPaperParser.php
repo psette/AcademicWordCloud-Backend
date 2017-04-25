@@ -55,6 +55,8 @@ class XMLPaperParser implements Parser{
 
         $paper->pdf = $PDFParser->getPDFLinkFromIEEE($XML->pdf->__toString());
 
+        $paper->pubYear = $XML->py->__toString();
+
         $text = $PDFParser->getTextFromPDF($paper->pdf, $paper->abstract);
 
         if($text == "PDF not parsed"){
@@ -104,6 +106,7 @@ class XMLPaperParser implements Parser{
             "bibtex" => $paper->bibtex,
             "download" => $paper->download,
             "pdf" => $paper->pdf,
+            "pubYear" =>$paper->pubYear,
             "fullWords" => $paper->fullWords,
             "frequentWords" => array_map([$wordParser, "serializeObject"], $paper->frequentWords),
             "authors" => $paper->authors,
@@ -112,7 +115,7 @@ class XMLPaperParser implements Parser{
             "conference" => $paper->conference,
             "conferenceID" => $paper->conferenceID,
         ];
-        
+
         return $json;
     }
 
@@ -122,7 +125,7 @@ class XMLPaperParser implements Parser{
         $json = [
             "title" => $paper,
         ];
-        
+
         return $json;
     }
 }
