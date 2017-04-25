@@ -16,6 +16,15 @@ use \XMLPaperParser as XMLPaperParser;
 class Server extends Controller
 {
 
+public function getProgress(Request $request) {
+        if ( $_SESSION["maximumPaperCount"] === 0 ) {
+            return 0;
+        } else {
+           return 1 - $_SESSION["numPapersLeft"] / $_SESSION["maximumPaperCount"];
+        }
+    }
+
+
     /*
      * Search for authors matching provided name.
      *
@@ -24,10 +33,28 @@ class Server extends Controller
      * @return array of paper objects
      */
     // @codeCoverageIgnoreStart
-    public function get_IEEE_file($author)
+    public function get_IEEE_file($type, $param)
     {
-        // get the contents of the wikia search
-        $location = "https://ieeexplore.ieee.org/gateway/ipsSearch.jsp?au=" . urlencode($author);
+        switch ($type) {
+            case 'name':
+                // get the contents of the wikia search
+                $location = "https://ieeexplore.ieee.org/gateway/ipsSearch.jsp?au=" . urlencode($param);
+                break;
+
+            case 'keyword':
+                // get the contents of the wikia search
+                $location = "https://ieeexplore.ieee.org/gateway/ipsSearch.jsp?md=" . urlencode($param);
+                break;
+
+            case 'conf':
+                // get the contents of the wikia search
+                $location = "https://ieeexplore.ieee.org/gateway/ipsSearch.jsp?jn=" . urlencode($param);
+                break;
+
+            default:
+                echo "Error in getting IEEE file";
+                break;
+        }
 
         $file = @simplexml_load_file($location);
 
@@ -42,11 +69,10 @@ class Server extends Controller
 
     /*
      *  Parse gieven XMLpaper into paper object array
-     *
      * @param XML file $file found in search
      * @return array of paper objects
      */
-    public function parseXMLObject($file, $maximumPaperCount)
+    public function parseXMLObject($file, $papersToSearch)
     {
 
         $XMLPaperParser = new XMLPaperParser();
@@ -54,7 +80,9 @@ class Server extends Controller
         $progress = 0;
         foreach ($file->document as $document) {
             $progress++;
-            if($progress >= $maximumPaperCount){
+
+            $_SESSION["numPapersLeft"] = $_SESSION["numPapersLeft"] - 1;
+            if($progress >= $papersToSearch ){
                 return $papers;
             }
             $paper = $XMLPaperParser->parseObject($document);
@@ -65,52 +93,39 @@ class Server extends Controller
 
     }
 
-    /*
-     * Search for authors matching provided text.
-     *
-     * @param Request $request
-     * @param string $author
-     *
-     * @return JSON-encoded authors array.
-     *
-     */
-    public function searchAuthors(Request $request, $author)
+    public function search(Request $request, $term)
     {
+
+        session_start();
+
         $searchType = $request->input('type');
-        $maximumPaperCount = (int) ($request->input('count'));
+        $_SESSION["maximumPaperCount"] = (int) ($request->input('count'));
 
-        if($maximumPaperCount % 2 === 0){
+        $_SESSION["numPapersLeft"] = $_SESSION["maximumPaperCount"];
 
-            $numACM = $maximumPaperCount  / 2;
-            $numIEEE = $maximumPaperCount  / 2;
 
-        } else {
-            $numACM =  1 + $maximumPaperCount  / 2;
-            $numIEEE = $maximumPaperCount  / 2;
+        $numACM = ceil( $_SESSION["maximumPaperCount"]  / 2 ) ;
+        $numIEEE = floor( $_SESSION["maximumPaperCount"]  / 2 );
 
-        }
 
         $XMLPaperParser = new XMLPaperParser();
 
-        $file = $this->get_IEEE_file($author);
+        $file = $this->get_IEEE_file($searchType, $term);
+        $papers = null;
 
-        $papers = $this->parseXMLObject($file, $numIEEE);
-
-        if( count( $papers ) < $numIEEE){
-
-            $numACM = $maximumPaperCount  - count( $papers );
-
+        if (strcmp($searchType, "conf") == 0)
+        {
+            $papers = $this->parseIEEEPaperTitles($file);
+        }
+        else
+        {
+            $file = $this->get_IEEE_file($searchType, $term);
+            $papers = $this->parseXMLObject($file, $numIEEE);
         }
 
-        $ACMpapers = ACMServer::searchPapers($author, $searchType, $numACM);
+        $numACM = $_SESSION["maximumPaperCount"]  - count($papers);
 
-        if( count( $ACMpapers ) + count( $papers ) < $maximumPaperCount){
-
-            $mergeTarget = array_merge($this->parseXMLObject($file, $maximumPaperCount), $papers);
-            $papers = array_unique($mergeTarget);
-
-
-        }
+        $ACMpapers = ACMServer::searchPapers($term, $searchType, $numACM);
 
         if(is_null($papers) && is_null($ACMpapers)){
 
@@ -131,8 +146,16 @@ class Server extends Controller
             $serialize = $papers;
         }
 
-        // Encode paper objects to JSON to send to client.
-        $serialized = array_map([$XMLPaperParser, "serializeObject"], $serialize);
+        $serialized = $serialize;
+
+        // Only need to serialize papers if not searching by conference.
+        // Conference searches are just strings so no need to serialize that.
+        if (strcmp($searchType, "conf") != 0)
+        {
+            // Encode paper objects to JSON to send to client.
+            $serialized = array_map([$XMLPaperParser, "serializeObject"], $serialize);
+        }
+
         $bytes = $this->utf8ize($serialized);
         $encoded = json_encode($bytes);
 
@@ -163,6 +186,7 @@ class Server extends Controller
             ->header('Content-Type', 'application/json')
             ->header('Access-Control-Allow-Origin', '*');
     }
+
     public function utf8ize($d)
     {
         if (is_array($d)) {
@@ -175,5 +199,14 @@ class Server extends Controller
         return $d;
     }
 
+    public function parseIEEEPaperTitles($file) {
+        $papers = array();
+        foreach ($file->document as $document) {
+            $papers[] = $document->title->__toString();;
+        }
+
+        return $papers;
     }
+}
+
 
