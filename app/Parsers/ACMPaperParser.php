@@ -23,6 +23,11 @@ class ACMPaperParser implements Parser
             $paper->abstract = $json["abstract"];
         }
 
+        if (array_key_exists("pubDate", $json))
+        {
+            $paper->pubYear = substr($json["pubDate"], 0, 4);
+        }
+
         foreach ($json["persons"] as $person)
         {
             $name = $person["displayName"];
