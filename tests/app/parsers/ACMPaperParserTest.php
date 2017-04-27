@@ -2,15 +2,34 @@
 
 class ACMPaperParserTest extends TestCase
 {
-	public function testParseBibtextLinkFromDownload()
+	public function testFetchBibtex()
 	{
-		$id = 10;
-        $expectedResponse = "http://dl.acm.org/citation.cfm?id=" . $id . "&preflayout=flat";
+        $paper = new Paper();
+        $paper->identifier = 10;
 
         $acmPaperParser = new ACMPaperParser();
-        $response = $acmPaperParser->parseBibtextLinkFromDownload($id);
+        $response = $acmPaperParser->fetchBibtex($paper);
+        $responseContainsEditor = strpos($response, "editor");
+        $responseContainsAuthor = strpos($response, "journal");
+        $responseContainsYear = strpos($response, "year");
+        $responseContainsIssn = strpos($response, "issn");
+        $responseContainsVolume = strpos($response, "volume");
+        $responseContainsNumber = strpos($response, "number");
+        $responseContainsIssueDate = strpos($response, "issue_date");
+        $responseContainsPublisher = strpos($response, "publisher");
+        $responseContainsAddress = strpos($response, "address");
 
-        $this->assertEquals($response, $expectedResponse);
+
+        $this->assertEquals(true, $responseContainsAuthor);
+        $this->assertEquals(true, $responseContainsEditor);
+        $this->assertEquals(true, $responseContainsYear);
+        $this->assertEquals(true, $responseContainsIssn);
+        $this->assertEquals(true, $responseContainsVolume);
+        $this->assertEquals(true, $responseContainsNumber);
+        $this->assertEquals(true, $responseContainsIssueDate);
+        $this->assertEquals(true, $responseContainsPublisher);
+        $this->assertEquals(true, $responseContainsAddress);
+
 	}
 
 	public function testSerializeObject()
@@ -34,6 +53,7 @@ class ACMPaperParserTest extends TestCase
         $paper->pdf = "expectedPdf";
         $paper->fullWords = "expectedFullWords";
         $paper->frequentWords = $frequentWordsArray;
+        $paper->pubYear = 2011;
         $paper->authors = "expectedAuthors";
         $paper->keywords = "expectedKeywords";
         $paper->abstract = "expectedAbstract";
@@ -50,6 +70,7 @@ class ACMPaperParserTest extends TestCase
             "bibtex" => $paper->bibtex,
             "download" => $paper->download,
             "pdf" => $paper->pdf,
+            "pubYear" => $paper->pubYear,
             "fullWords" => $paper->fullWords,
             "frequentWords" => $expectedFrequentWords,
             "authors" => $paper->authors,

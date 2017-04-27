@@ -53,6 +53,7 @@ class XMLPaperParserTest extends TestCase
         $paper->bibtex = "expectedBibtex";
         $paper->download = "expectedDownload";
         $paper->pdf = "expectedPdf";
+        $paper->pubYear = 2011;
         $paper->fullWords = "expectedFullWords";
         $paper->frequentWords = $frequentWordsArray;
         $paper->authors = "expectedAuthors";
@@ -72,6 +73,7 @@ class XMLPaperParserTest extends TestCase
             "bibtex" => $paper->bibtex,
             "download" => $paper->download,
             "pdf" => $paper->pdf,
+            "pubYear" => $paper->pubYear,
             "fullWords" => $paper->fullWords,
             "frequentWords" => $expectedFrequentWords,
             "authors" => $paper->authors,
