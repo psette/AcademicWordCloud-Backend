@@ -141,9 +141,7 @@ public function getProgress(Request $request) {
 
         } else {
 
-            array_merge($papers, $ACMpapers);
-
-            $serialize = $papers;
+            $serialize = array_merge($papers, $ACMpapers);
         }
 
         $serialized = $serialize;
