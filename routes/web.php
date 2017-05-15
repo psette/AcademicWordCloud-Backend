@@ -23,5 +23,4 @@ include_once dirname(__FILE__) . '/../app/Parsers/LyricParser.php';
 $app->get('/search/{term}', 'Server@search');
 $app->get('/getProgress/', 'Server@getProgress');
 
-
 ?>
